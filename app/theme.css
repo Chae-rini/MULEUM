@@ -1,0 +1,20 @@
+:root {
+  --ivory: #FAF7F2;
+  --forest: #2F4A3E;
+  --sage: #809B87;
+  --sand: #E8DED2;
+  --clay: #B9775A;
+  --dark-ink: #3B3530;
+  --surface: #FFFFFF;
+  --text-secondary: #59534C;
+  --error-ink: #7A3D29;
+  --paper: var(--ivory);
+  --ink: var(--dark-ink);
+  --muted: var(--text-secondary);
+  --line: var(--sand);
+  --green: var(--forest);
+  --soft: var(--sand);
+  --on-brand: var(--ivory);
+  --shadow-color: #3B353008;
+  --overlay: #3B353066;
+}

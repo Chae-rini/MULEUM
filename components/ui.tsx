@@ -1,5 +1,9 @@
 import type { ReactNode } from "react";
 
+export function DemoNotice({ children }: { children: ReactNode }) {
+  return <div className="note scaffold-note"><strong>개발용 가상 데이터 시연</strong><p>{children}</p></div>;
+}
+
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <section className={`card ${className}`}>{children}</section>;
 }
