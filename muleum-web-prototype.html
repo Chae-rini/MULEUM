@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f7f7f3" />
+  <title>물음 | 모든 배움은 하나의 질문에서 시작된다</title>
+  <style>
+    :root { --paper:#f7f7f3; --white:#fff; --ink:#23352e; --muted:#758177; --line:#e5e9e3; --green:#315b49; --green-light:#eaf1e9; --mint:#d5e8db; --pale:#f0f2ec; --shadow:0 12px 35px rgba(30,57,38,.045); }
+    *{box-sizing:border-box} body{margin:0;color:var(--ink);background:var(--paper);font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;font-size:14px;line-height:1.6}
+    button,input,textarea,select{font:inherit} button{cursor:pointer} button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #94ba9b;outline-offset:2px}
+    .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh;max-width:1560px;margin:0 auto}
+    aside{background:#fff;border-right:1px solid var(--line);padding:31px 18px;display:flex;flex-direction:column;gap:28px;position:sticky;top:0;height:100vh}
+    .logo{display:flex;align-items:center;gap:12px;padding:0 12px}.brand-mark{font-size:27px;font-weight:800;color:#f7f7f3;width:43px;height:43px;border-radius:14px;background:var(--green);display:grid;place-items:center;line-height:1}.logo strong{font-size:22px;letter-spacing:-1px}.logo small{display:block;color:var(--muted);font-size:10px;letter-spacing:0}
+    .nav{display:flex;flex-direction:column;gap:6px}.nav button{display:flex;gap:12px;align-items:center;text-align:left;width:100%;border:0;background:transparent;color:#65736a;border-radius:12px;padding:13px 15px;font-weight:600}.nav button.active{background:var(--green-light);color:var(--green)}.nav .emoji{font-size:19px;width:25px;text-align:center}
+    .aside-tip{margin-top:auto;border-radius:18px;background:#edf4ed;padding:18px}.aside-tip strong{font-size:13px}.aside-tip p{font-size:12px;color:#566a5d;margin:6px 0 0}
+    .workspace{padding:32px clamp(20px,4vw,58px) 54px;min-width:0}.topbar{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:34px}.eyebrow{font-size:12px;color:var(--muted);letter-spacing:.03em}.topbar .role{display:flex;align-items:center;gap:8px}.role label{color:var(--muted);font-size:12px}.role select{padding:10px 13px;background:#fff;border-radius:12px;border:1px solid var(--line);color:var(--ink)}
+    h1,h2,h3,p{margin-top:0}h1{font-size:clamp(25px,3vw,36px);letter-spacing:-1.4px;line-height:1.35;margin-bottom:11px}h2{font-size:19px;letter-spacing:-.5px;margin-bottom:16px}h3{font-size:15px;margin-bottom:7px}.lead{color:var(--muted);font-size:15px;margin-bottom:28px}.page{display:none}.page.active{display:block}
+    .stack{display:grid;gap:18px}.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow)}.card.soft{background:#edf3ea;border-color:#e3ece1}.card.hero{background:#254a39;color:white;border-color:#254a39;position:relative;overflow:hidden;padding:31px}.card.hero:after{content:'?';font-weight:700;font-size:200px;position:absolute;line-height:1;right:12px;bottom:-93px;opacity:.07;pointer-events:none}.hero h2{font-size:26px;font-weight:700;max-width:500px;line-height:1.4}.hero p{color:#d5e4d8;max-width:520px;font-size:14px}.pill{display:inline-block;font-size:11px;border-radius:999px;padding:5px 10px;background:#dcead9;color:var(--green);font-weight:700}.hero .pill{background:#507463;color:white;margin-bottom:16px}
+    .small{color:var(--muted);font-size:12px}.meta{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px}.row{display:flex;align-items:center;justify-content:space-between;gap:15px}.separator{border:0;border-top:1px solid var(--line);margin:18px 0}.question-list{display:grid;gap:10px}.question-item{border:1px solid var(--line);border-radius:14px;padding:15px;background:#fff}.question-item p{font-weight:600;margin:0 0 5px;overflow-wrap:anywhere}.question-item span{font-size:11px;color:var(--muted)}
+    .button{border:0;border-radius:11px;background:var(--green);color:white;padding:11px 17px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px}.button.alt{background:#edf3ed;color:var(--green)}.button.line{border:1px solid #d8e3d9;background:#fff;color:var(--green)}.button:disabled{opacity:.5;cursor:not-allowed}textarea,input[type=text]{border:1px solid #dde5db;border-radius:12px;width:100%;padding:13px 14px;background:#fff;color:var(--ink)}textarea{resize:vertical;min-height:85px}.field{display:grid;gap:8px;margin-bottom:16px}.field label{font-size:13px;font-weight:700}.field .hint{font-size:12px;color:var(--muted)}.prompt-box{background:var(--pale);border-radius:15px;padding:18px;margin-bottom:15px}.prompt-box strong{display:block;font-size:15px}.prompt-box small{font-size:11px;color:var(--muted)}.toast{position:fixed;bottom:24px;right:25px;padding:13px 20px;background:#253f31;color:#fff;border-radius:12px;box-shadow:0 10px 30px #14271933;z-index:99;display:none}.toast.show{display:block}
+    .progress-track{background:#e3ebe2;border-radius:99px;height:10px;overflow:hidden}.progress-track span{display:block;height:100%;background:#5f9a78;border-radius:99px;width:0%;transition:width .2s}.lesson-step{display:flex;align-items:flex-start;gap:13px;border-bottom:1px solid var(--line);padding:13px 0}.lesson-step:last-child{border-bottom:0}.lesson-step input{width:17px;height:17px;margin-top:4px;accent-color:var(--green)}.lesson-step strong{display:block;font-size:14px}.lesson-step p{font-size:12px;color:var(--muted);margin:3px 0 0}.lesson-time{margin-left:auto;color:var(--muted);white-space:nowrap;font-size:13px}.empty{border:1px dashed #c6d5c8;background:#f8faf7;border-radius:14px;padding:17px;color:var(--muted);font-size:13px}.note{border-radius:12px;background:#f5f7f2;padding:14px 16px;color:#57665b;font-size:12px}.demo-warning{font-size:12px;color:#805c33;background:#fcf6e9;border:1px solid #eee0c9;padding:11px 15px;border-radius:11px;margin-top:24px}.stat strong{font-size:25px;display:block;line-height:1.3}.stat span{color:var(--muted);font-size:12px}.bottom-nav{display:none}
+    @media(max-width:1000px){.app{grid-template-columns:190px 1fr}.grid{grid-template-columns:1fr}.workspace{padding:25px 26px}.three{grid-template-columns:repeat(2,minmax(0,1fr))}} 
+    @media(max-width:690px){.app{display:block}.workspace{padding:23px 16px 102px}.topbar{align-items:flex-start;margin-bottom:23px}.topbar .eyebrow{max-width:190px}.topbar .role{flex-direction:column;align-items:flex-end;gap:4px}.role select{max-width:140px}.grid,.three{grid-template-columns:1fr}.card{padding:19px;border-radius:17px}.card.hero{padding:25px}.hero h2{font-size:23px}aside{display:none}.bottom-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--line);z-index:20;padding:6px 4px max(8px,env(safe-area-inset-bottom))}.bottom-nav button{border:0;background:none;color:#76827a;font-size:10px;display:grid;gap:2px;justify-items:center;padding:5px 2px}.bottom-nav button.active{color:var(--green);font-weight:800}.bottom-nav .emoji{font-size:21px}.toast{bottom:85px;right:14px;left:14px;text-align:center}}
+  </style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="logo"><div class="brand-mark">?</div><div><strong>물음</strong><small>모든 배움은 하나의 질문에서</small></div></div>
+  <nav class="nav" aria-label="메인 메뉴">
+    <button data-page="home" class="active"><span class="emoji">⌂</span> 오늘의 물음</button>
+    <button data-page="questions"><span class="emoji">?</span> 나의 물음</button>
+    <button data-page="journal"><span class="emoji">✎</span> 5분 일기</button>
+    <button data-page="goals"><span class="emoji">◎</span> 나의 목표</button>
+    <button data-page="lesson"><span class="emoji">▤</span> 과외 수업</button>
+    <button data-page="teacher"><span class="emoji">◈</span> 지도자 공간</button>
+    <button data-page="parent"><span class="emoji">♡</span> 성장 리포트</button>
+  </nav>
+  <div class="aside-tip"><strong>오늘의 작은 물음</strong><p>나는 무엇을 모르는가?<br>그것을 어떻게 알아낼까?</p></div>
+</aside>
+<main class="workspace">
+  <header class="topbar">
+    <div><div class="eyebrow">MULEUM · PRIVATE DEMO</div><div class="small">정답보다 질문을, 관리보다 자율성을.</div></div>
+    <div class="role"><label for="role">화면 역할 미리보기</label><select id="role"><option value="student">학생</option><option value="teacher">선생님</option><option value="parent">학부모</option></select></div>
+  </header>
+  <section class="page active" id="home">
+    <h1>배움은 질문에서 시작돼요.</h1><p class="lead">오늘의 생각을 기록하고, 작지만 나만의 한 걸음을 선택해 봐요.</p>
+    <div class="grid">
+      <div class="stack">
+        <div class="card hero"><span class="pill">TODAY'S QUESTION</span><h2>최근에 “왜 그럴까?” 하고 궁금했던 일이 있나요?</h2><p>공부에 관한 일이 아니어도 괜찮아요. 나만의 질문을 하나 남겨 보세요.</p><button class="button" style="background:#e3f0e5;color:#214534" data-goto="questions">내 질문 남기기 →</button></div>
+        <div class="card"><div class="row"><h2>나의 최근 물음</h2><button class="button alt" data-goto="questions">전체 보기 →</button></div><div class="question-list" id="recentQuestions"></div></div>
+      </div>
+      <div class="stack">
+        <div class="card"><div class="meta">이번 주 내가 선택한 목표</div><h2 style="margin-top:10px">작은 실천 하나부터</h2><div id="homeGoals"></div><button class="button line" style="margin-top:12px" data-goto="goals">목표 관리하기</button></div>
+        <div class="card soft"><div class="meta">저녁의 5분</div><h2 style="margin:8px 0 9px">오늘의 나를 돌아보기</h2><p>평가하거나 점수를 매기지 않아요. 하루를 돌아보며 내일을 위한 질문을 남겨요.</p><button class="button" data-goto="journal">5분 일기 쓰기 →</button></div>
+      </div>
+    </div>
+  </section>
+  <section class="page" id="questions">
+    <h1>나의 물음</h1><p class="lead">중요한 것은 정답이 아니라, 내가 어떤 질문을 발견했는지예요.</p>
+    <div class="grid">
+      <div class="card"><h2>새 질문 남기기</h2><form id="questionForm"><div class="field"><label for="questionText">지금 나에게 궁금한 것은 무엇인가요?</label><textarea maxlength="300" id="questionText" required placeholder="예: 나는 왜 틀리는 것이 두려울까?"></textarea></div><div class="field"><label for="questionWhy">이 질문을 하게 된 이유 (선택)</label><textarea maxlength="500" id="questionWhy" placeholder="어떤 일을 겪었나요? 왜 궁금해졌나요?"></textarea></div><div class="row"><span class="small">내 질문은 이 시연 화면에만 표시돼요.</span><button type="submit" class="button">물음 남기기</button></div></form></div>
+      <div class="card"><h2>질문을 깊게 만드는 방법</h2><div class="prompt-box"><small>WHY</small><strong>왜 그렇게 생각했을까?</strong></div><div class="prompt-box"><small>HOW</small><strong>어떻게 확인할 수 있을까?</strong></div><div class="prompt-box"><small>WHAT IF</small><strong>다른 가능성은 없을까?</strong></div><div class="prompt-box"><small>HOW DO I KNOW</small><strong>내 생각의 근거는 충분할까?</strong></div><div class="note">AI는 학생의 생각을 대신 작성하기보다, 더 정확하게 생각하도록 질문하는 조력자가 돼요.</div></div>
+    </div>
+    <div class="card" style="margin-top:18px"><h2>질문의 기록</h2><div class="question-list" id="allQuestions"></div></div>
+  </section>
+  <section class="page" id="journal">
+    <h1>5분 일기</h1><p class="lead">하루를 잘 보냈는지 평가하지 않아도 괜찮아요. 나에게 무슨 일이 있었는지 살펴봐요.</p>
+    <div class="grid"><div class="card"><form id="journalForm">
+      <div class="field"><label for="journal1">01 · 오늘 가장 기억에 남는 일은 무엇인가요?</label><textarea id="journal1" placeholder="기뻤거나, 힘들었거나, 그냥 평범했던 일도 좋아요."></textarea></div>
+      <div class="field"><label for="journal2">02 · 그 일이 나에게 중요했던 이유는 무엇인가요?</label><textarea id="journal2" placeholder="꼭 답을 알아야 하는 것은 아니에요."></textarea></div>
+      <div class="field"><label for="journal3">03 · 오늘 스스로에게 남기고 싶은 질문은 무엇인가요?</label><textarea id="journal3" placeholder="오늘의 물음 하나"></textarea></div>
+      <div class="row"><span class="small">🔒 비공개 시연 · 서버 저장 없음</span><button type="submit" class="button">나의 기록 마무리</button></div>
+    </form></div><div class="stack"><div class="card soft"><h2>기록을 위한 약속</h2><p>글을 잘 쓸 필요는 없어요. 매일 쓰지 않아도 괜찮아요. 다른 사람이 원하는 대답을 작성하지 않아도 돼요.</p><p class="small">실제 서비스에서는 일기와 과외 기록을 별도 권한으로 보호할 계획이에요.</p></div><div class="card"><h2>내 기록 상태</h2><div class="meta" id="journalStatus">아직 작성하지 않았어요</div><hr class="separator"/><p class="small">이 버전은 기능 시연용이므로 새로고침하면 입력한 내용이 사라져요.</p></div></div></div>
+  </section>
+  <section class="page" id="goals">
+    <h1>나의 목표</h1><p class="lead">남이 정한 목표가 아니라, 내가 선택하고 시도해 볼 수 있는 작은 행동을 만들어요.</p>
+    <div class="grid"><div class="card"><h2>이번 주에 해보고 싶은 일</h2><form id="goalForm"><div class="field"><label for="goalText">구체적인 작은 행동</label><input id="goalText" type="text" maxlength="120" required placeholder="예: 모르는 문제를 5분 더 고민하기" /></div><button class="button" type="submit">나의 목표 추가</button></form><hr class="separator"/><div id="goalItems"></div></div><div class="card soft"><h2>목표는 이렇게 정해 봐요</h2><p>“공부를 잘하고 싶다”보다는 “수요일 오후에 수학 문제 3개를 직접 풀어 보겠다”처럼 시작하기 쉽고, 했는지 확인할 수 있는 행동이 좋아요.</p><div class="note">목표를 지키지 못했다면 나를 비난하지 말고, 무엇이 방해가 되었는지 탐색해 봐요.</div></div></div>
+  </section>
+  <section class="page" id="lesson">
+    <h1>과외 수업</h1><p class="lead">120분 수업 · 독서와 언어, 교과 학습, 독립적인 문제 해결, 질문의 시간.</p>
+    <div class="grid"><div class="card"><div class="row"><h2>오늘의 수업 흐름</h2><span class="pill">120분</span></div><div id="lessonSteps"></div><hr class="separator"/><div class="row"><strong>진행 확인</strong><span class="small" id="lessonProgressLabel">0 / 7</span></div><div class="progress-track" style="margin-top:10px"><span id="lessonProgress"></span></div></div><div class="stack"><div class="card soft"><h2>오늘의 물음</h2><p>수업을 마친 뒤 오늘 배운 개념이나 일상에서 궁금했던 점을 질문으로 남겨 보세요.</p><button class="button" data-goto="questions">질문 남기기 →</button></div><div class="card"><h2>비대면 과외</h2><p class="small">정식 버전에서는 교사가 승인한 화상회의 링크와 필기 보드를 이곳에서 열 수 있어요.</p><button class="button line" disabled>화상수업 연결 (준비 중)</button></div></div></div>
+  </section>
+  <section class="page" id="teacher">
+    <h1>지도자 공간</h1><p class="lead">학생을 통제하는 화면이 아니라, 학생의 질문과 학습 변화를 이해하는 공간이에요.</p>
+    <div class="three"><div class="card stat"><span>베타 학생</span><strong>3명</strong><div class="small">시연용 가상 데이터</div></div><div class="card stat"><span>이번 주 수업</span><strong>4회</strong><div class="small">시연용 가상 데이터</div></div><div class="card stat"><span>학생이 스스로 만든 질문</span><strong>8개</strong><div class="small">시연용 가상 데이터</div></div></div>
+    <div class="grid" style="margin-top:18px"><div class="card"><h2>학생별 수업 기록</h2><div class="question-list"><div class="question-item"><p>학생 A · 수학</p><span>이차함수의 최대·최소 / 그래프의 의미 설명에 어려움</span></div><div class="question-item"><p>학생 B · 국어</p><span>문단별 주장·근거 분리하기 / 독립적인 질문 생성 시도</span></div><div class="question-item"><p>학생 C · 영어</p><span>긴 문장의 수식 구조 파악 / 주간 학습 계획 직접 설정</span></div></div></div><div class="card"><h2>수업 후 질문</h2><div class="prompt-box"><strong>학생이 스스로 설명할 수 있었던 내용은?</strong></div><div class="prompt-box"><strong>학생의 질문에서 어떤 변화가 나타났나?</strong></div><div class="prompt-box"><strong>다음 수업에서 내가 조정할 점은?</strong></div><p class="small">정식 서비스에서는 학생별 접근 권한과 교사 승인 절차를 적용해요.</p></div></div>
+  </section>
+  <section class="page" id="parent">
+    <h1>성장의 기록</h1><p class="lead">학부모에게는 학생의 사적인 기록이 아니라, 서로 합의한 교육 목표와 지도 과정을 설명해요.</p>
+    <div class="grid"><div class="card"><span class="pill">승인된 리포트 예시</span><h2 style="margin-top:15px">이번 주에 관찰된 성장</h2><p>학생이 이번 주의 학습 목표를 직접 선택하고, 모르는 개념을 질문으로 표현하는 연습을 했습니다.</p><hr class="separator"/><h3>다음 수업의 방향</h3><p class="small">수학 문제의 풀이 과정을 자기 언어로 설명하고, 잘못된 단계에 대한 질문을 스스로 구성하는 연습을 이어갑니다.</p></div><div class="card soft"><h2>학부모와의 신뢰</h2><p>일기 원문이나 개인적인 고민은 기본적으로 공유하지 않아요.</p><p>수업 성취, 지도 방향, 학생이 공유에 동의한 학습 목표만 필요한 범위에서 전달하는 것을 원칙으로 해요.</p></div></div>
+  </section>
+  <div class="demo-warning">🔒 이 웹페이지는 기능 구상용 로컬 프로토타입입니다. 실제 로그인·권한 분리·영구 저장·AI 호출·화상수업은 구현되지 않았어요. 실제 학생 개인정보나 민감한 일기는 입력하지 마세요.</div>
+</main>
+</div>
+<nav class="bottom-nav" aria-label="모바일 메뉴"><button data-page="home" class="active"><span class="emoji">⌂</span>홈</button><button data-page="questions"><span class="emoji">?</span>물음</button><button data-page="journal"><span class="emoji">✎</span>일기</button><button data-page="goals"><span class="emoji">◎</span>목표</button><button data-page="lesson"><span class="emoji">▤</span>수업</button></nav>
+<div id="toast" role="status" class="toast" aria-live="polite"></div>
+<script>
+(() => {
+  const questions=[{q:'왜 같은 문제를 여러 번 틀리는 걸까?',why:'실수라고만 생각했는데 이유를 알고 싶다.',demo:true},{q:'내가 요즘 가장 재미있어하는 일은 무엇일까?',why:'',demo:true}];
+  const goals=[{text:'모르는 문제가 나오면 먼저 5분 직접 고민하기',done:false},{text:'일주일에 한 번 독서 후 질문 하나 남기기',done:false}];
+  const steps=[['인사와 주간 리뷰','학생의 일상과 지난 한 주를 편안하게 듣는 시간',5],['독서','자신이 선택한 책을 읽고 떠오르는 물음을 찾기',10],['영단어','50개 단어를 인출·필기로 점검하되 수준에 따라 조정',10],['본 수업','개념과 원리를 이해하고 왜 그런지 질문하기',55],['짧은 휴식','눈과 몸을 잠시 쉬게 하기',5],['독립 문제풀이','스스로 시도하고 막힌 지점 확인하기',25],['오늘의 리뷰와 다음 물음','질의응답·다음 목표·토론 주제·플랫폼 기록',10]];
+  let completed=new Set();let toastTimer;
+  const esc=s=>String(s).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+  function toast(s){const el=document.getElementById('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500)}
+  function go(page){document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id===page));document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page));window.scrollTo({top:0,behavior:'smooth'});}
+  document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.page)));
+  document.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.goto)));
+  document.getElementById('role').addEventListener('change',e=>{const page=e.target.value==='student'?'home':e.target.value==='teacher'?'teacher':'parent';go(page);toast('역할별 예시 화면이에요. 실제 접근 권한은 아직 없어요.')});
+  function renderQuestions(){const html=questions.slice().reverse().map(q=>`<div class="question-item"><p>${esc(q.q)}</p>${q.why?`<div class="small">${esc(q.why)}</div>`:''}<span>${q.demo?'시연용 질문':'지금 만든 질문'} · 나만 보기</span></div>`).join('');document.getElementById('recentQuestions').innerHTML=questions.slice(-2).reverse().map(q=>`<div class="question-item"><p>${esc(q.q)}</p><span>${q.demo?'시연 예시':'내가 작성한 질문'}</span></div>`).join('');document.getElementById('allQuestions').innerHTML=html;}
+  function renderGoals(){document.getElementById('goalItems').innerHTML=goals.map((g,i)=>`<label class="lesson-step" style="cursor:pointer"><input type="checkbox" data-goal="${i}" ${g.done?'checked':''}/><span style="${g.done?'text-decoration:line-through;color:#869488':''}">${esc(g.text)}</span></label>`).join('')||'<div class="empty">이번 주 작은 목표를 정해 보세요.</div>';document.getElementById('homeGoals').innerHTML=goals.length?goals.slice(0,3).map(g=>`<div class="lesson-step"><span>${g.done?'☑':'□'} ${esc(g.text)}</span></div>`).join(''):'<div class="empty">아직 목표가 없어요.</div>';document.querySelectorAll('[data-goal]').forEach(el=>el.addEventListener('change',()=>{goals[+el.dataset.goal].done=el.checked;renderGoals()}));}
+  function renderLesson(){document.getElementById('lessonSteps').innerHTML=steps.map(([name,desc,min],i)=>`<label class="lesson-step" style="cursor:pointer"><input type="checkbox" data-step="${i}" ${completed.has(i)?'checked':''}/><div><strong>${esc(name)}</strong><p>${esc(desc)}</p></div><span class="lesson-time">${min}분</span></label>`).join('');document.getElementById('lessonProgress').style.width=(completed.size/steps.length*100)+'%';document.getElementById('lessonProgressLabel').textContent=`${completed.size} / ${steps.length}`;document.querySelectorAll('[data-step]').forEach(el=>el.addEventListener('change',()=>{el.checked?completed.add(+el.dataset.step):completed.delete(+el.dataset.step);renderLesson()}));}
+  document.getElementById('questionForm').addEventListener('submit',e=>{e.preventDefault();const q=document.getElementById('questionText').value.trim(),why=document.getElementById('questionWhy').value.trim();if(!q)return;questions.push({q,why,demo:false});e.target.reset();renderQuestions();toast('새로운 물음이 이 화면에 추가됐어요.');});
+  document.getElementById('goalForm').addEventListener('submit',e=>{e.preventDefault();const text=document.getElementById('goalText').value.trim();if(!text)return;goals.push({text,done:false});e.target.reset();renderGoals();toast('내가 정한 작은 목표가 추가됐어요.');});
+  document.getElementById('journalForm').addEventListener('submit',e=>{e.preventDefault();const hasText=[...e.target.querySelectorAll('textarea')].some(x=>x.value.trim());if(!hasText){toast('오늘 남기고 싶은 내용을 먼저 적어주세요.');return;}document.getElementById('journalStatus').textContent='오늘의 기록을 이 화면에서 작성했어요. (서버 저장 없음)';toast('오늘을 돌아봤어요. 수고했어요.');});
+  renderQuestions();renderGoals();renderLesson();
+})();
+</script>
+</body>
+</html>
