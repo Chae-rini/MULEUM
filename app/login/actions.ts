@@ -6,6 +6,7 @@ import { authCookie, demoCookie, cookieOptions, createDemoSession, requireIdenti
 import { authConfig, demoEnabled, passwordLogin, resolveIdentity, revokeSession, updateOwnProfile } from "@/lib/auth/supabase";
 import { demoRoles, memberHome } from "@/lib/auth/policy";
 import { revalidatePath } from "next/cache";
+import { revokeAllSubscriptions } from "@/lib/notifications/server";
 
 export interface ActionState { error?: string; success?: string }
 
@@ -44,17 +45,21 @@ export async function demoLogin(form: FormData) {
   redirect(`/member/${role}`);
 }
 
-export async function logout() {
+export async function logout(devicePushFailed = false) {
   const jar = await cookies();
   const token = jar.get(authCookie)?.value;
   const config = authConfig(process.env);
   let revokeFailed = false;
+  let pushFailed = devicePushFailed === true;
   if (config && token) {
+    if (process.env.MULEUM_NOTIFICATION_SCHEMA_READY === "true") {
+      try { await revokeAllSubscriptions(config, token); } catch { pushFailed = true; }
+    }
     try { await revokeSession(config, token); } catch { revokeFailed = true; }
   }
   jar.delete(authCookie);
   jar.delete(demoCookie);
-  redirect(revokeFailed ? "/login?logout=local" : "/login?logout=done");
+  redirect(revokeFailed ? "/login?logout=local" : pushFailed ? "/login?logout=push-unconfirmed" : "/login?logout=done");
 }
 
 export async function saveProfile(_previous: ActionState, form: FormData): Promise<ActionState> {

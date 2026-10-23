@@ -26,6 +26,10 @@ muleum-icon-blue.png
 Source: project owner supplied "문서 더미 위의 파란 물음표.png".
 Copied unchanged, 1254x1254. Current header, login and favicon asset.
 
+pwa-180.png, pwa-192.png, pwa-512.png
+Resized from muleum-icon-blue.png using existing Sharp, contain fit without cropping.
+Original artwork and background retained. No new artwork or transparency generated.
+
 library-concept.png
 Source: project owner supplied "햇살 가득한 질문의 도서관.png".
 Copied unchanged, 1536x1024. Current hero concept image.

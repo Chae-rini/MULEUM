@@ -1,0 +1,32 @@
+[
+  {
+    "name": "mobile",
+    "width": 390,
+    "height": 844,
+    "overflow": false,
+    "contrastFailures": [],
+    "headingSize": "31.98px",
+    "heroColumns": "350px",
+    "pageHeight": 5273
+  },
+  {
+    "name": "tablet",
+    "width": 820,
+    "height": 1180,
+    "overflow": false,
+    "contrastFailures": [],
+    "headingSize": "40px",
+    "heroColumns": "754.406px",
+    "pageHeight": 4924
+  },
+  {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900,
+    "overflow": false,
+    "contrastFailures": [],
+    "headingSize": "48px",
+    "heroColumns": "563.094px 596.906px",
+    "pageHeight": 3700
+  }
+]

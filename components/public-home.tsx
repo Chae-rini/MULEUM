@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Navigation } from "./navigation";
 import { Icon } from "./icon";
+import styles from "./public-home.module.css";
 
 const links = [
   { page: "philosophy", label: "물음의 철학", icon: "?", href: "#philosophy" },
@@ -23,9 +24,9 @@ const lesson = [
 export function PublicHome() {
   return <>
     <a className="skip-link" href="#public-content">본문으로 바로가기</a>
-    <div className="app public-app"><div className="workspace">
+    <div className={`app public-app ${styles.home}`}><div className="workspace">
       <Navigation links={links} current=""><Link href="/login" className="button line public-entry">로그인 ↗</Link></Navigation>
-      <main id="public-content">
+      <main id="public-content" tabIndex={-1}>
         <section className="public-hero" aria-labelledby="public-title">
           <div className="public-hero-copy">
             <p className="eyebrow">MULEUM · A PLACE FOR THOUGHT</p>
@@ -35,7 +36,7 @@ export function PublicHome() {
             <p className="official-slogan">모든 배움은 하나의 질문에서 시작된다.</p>
           </div>
           <figure className="library-hero-photo">
-            <Image src="/brand/library-concept.png" width={1536} height={1024} sizes="(max-width: 690px) 100vw, 55vw" alt="자연광과 하늘색 의자가 어우러진 질문의 도서관 콘셉트 이미지" priority />
+            <Image src="/brand/library-concept.png" width={1536} height={1024} sizes="(max-width: 900px) 100vw, (max-width: 1320px) 50vw, 600px" alt="자연광과 하늘색 의자가 어우러진 질문의 도서관 콘셉트 이미지" priority />
             <figcaption><span>브랜드 분위기를 위한 참고 이미지 · 물음 운영 시설 아님</span><span>사용자 제공 브랜드 콘셉트 이미지</span></figcaption>
           </figure>
         </section>
