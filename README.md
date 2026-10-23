@@ -25,12 +25,13 @@ npm run dev -- --hostname 127.0.0.1 --port 3001
 
 ## 구현된 기능
 
-- **공통 디자인:** 요청한 아이보리·포레스트·세이지·샌드·클레이·잉크 색상을 `app/theme.css`에 모음. 본문 대비 검사와 키보드 메뉴 유지.
+- **공통 디자인:** Soft Blue Library. 하늘색·화이트·딥 네이비를 `app/theme.css`의 CSS 변수와 Tailwind 테마로 관리. 새 공식 아이콘을 로고·로그인·파비콘에 적용하고 사용자 제공 도서관 콘셉트 이미지를 홈페이지에 사용. 실제 운영 시설이 아님을 명시하며 이전 에셋은 보존.
+- **로그인·마이페이지:** `/login`, `/member/[role]`, `/mypage`. 개발 서버에서 다섯 가상 계정 체험, 역할별 홈·메뉴, 로그아웃, 서버 접근 검사. Supabase 로그인 및 본인 프로필 조회·수정 코드는 준비했고 가상 Auth/REST 서버로 검증했으나 실제 Supabase는 미연결. 실제 초대·회원가입은 닫혀 있음.
 - **프로필·계정 시연:** `/app/profile`, `/app/register`, `/app/accounts`. 선택 성별, 직접 표현, 복수 역할, 연령/재학 분리, 보호자 관계 승인·철회, 주 담당 배정, 졸업·활동 중지, 감사 기록. 실제 인증·초대는 미연결.
 - **공식 영상 자료실:** `/app/videos`. 제작자 초안·검토 요청, 관리자 공개 상태 수동 확인·승인, 학생 배정, Studio 초대·회수 확인. 요청한 공개 범위와 YouTube 확인 상태를 별도 관리. 실제 채널·API·영상 재생은 미연결.
 - **SQL 기반 보안 준비:** 회원·관계·비공개 기록·영상 테이블, RLS, 관리자 전용 DB 함수, 정원 제한. 격리된 PostgreSQL에서 실행 검사했으며 웹앱/운영 DB에는 연결하지 않음.
 - **공개 홈페이지 `/`:** 교육철학, 조정 가능한 120분 수업 기본형, 구성원의 관계, 공동체 비전, 비공개 베타 준비 안내. 회원 기록을 불러오지 않음.
-- **회원 공간 `/app`:** 각 화면의 독립 주소, 새로고침·뒤로가기·앞으로가기, 7가지 역할 미리보기. 공지 예시 필터, 사람 중심 질문게시판 예시, 교수법 연구·졸업생 공동체·운영 공간의 골격. 새 화면의 게시·답변·모임·초대 기능은 미구현이며 시연 표시.
+- **학습 기능 시연 `/app`:** 각 화면의 독립 주소, 새로고침·뒤로가기·앞으로가기, 역할 미리보기. 공지 예시 필터, 사람 중심 질문게시판 예시, 교수법 연구·운영 공간의 골격. 실제 회원 데이터와 분리. 졸업생은 프로필만 안내하며 내부 모임·졸업생 게시판·라운지 메뉴는 없음.
 - **오늘의 물음:** 최근 질문, 이번 주 목표 요약, 일기와 질문 작성으로 이동.
 - **나의 물음:** 최대 300자 질문과 선택적인 이유를 작성하고 목록에서 확인. 공백 입력을 거부하고 HTML 같은 문자열도 실행하지 않고 글자로 표시.
 - **5분 일기:** 하루 세 가지 성찰 질문 중 하나 이상 작성, 날짜별 기록 조회, 기존 기록 수정. 하루 한 기록이며 교사·학부모 화면에 원문을 표시하지 않음.
@@ -47,7 +48,7 @@ npm run dev -- --hostname 127.0.0.1 --port 3001
 
 저장은 **브라우저 저장소 (Local Storage)** 를 사용합니다. 같은 브라우저의 같은 주소로 돌아오면 저장한 기록이 유지됩니다. 작성 완료 버튼을 누르기 전의 입력은 임시 내용이며, 화면을 떠나면 사라집니다. 브라우저 데이터 삭제, 비공개 모드 종료 등에 따라 저장 기록이 없어질 수 있으며 기기 간 동기화나 서버 백업은 없습니다.
 
-가상의 데이터만 사용하세요. 역할 선택은 **화면 미리보기이지 인증이나 보안 기능이 아닙니다.** 같은 브라우저에서 학생 역할로 돌아가면 일기를 볼 수 있고, 개발자 도구에서도 저장된 값을 확인할 수 있습니다. 실제 학생과 비공개 일기를 보호하려면 서버 인증과 접근 권한을 먼저 구현해야 합니다.
+가상의 데이터만 사용하세요. `/app`의 역할 선택은 **화면 미리보기이지 인증이나 보안 기능이 아닙니다.** 같은 브라우저에서 학생 역할로 돌아가면 일기를 볼 수 있고, 개발자 도구에서도 저장된 값을 확인할 수 있습니다. 새 로그인 경로는 이 기록을 불러오지 않습니다. 실제 학생 자료를 사용하려면 학습 데이터를 인증된 계정별 DB 저장소로 연결하고 권한을 검증해야 합니다.
 
 저장 키는 용도별로 분리합니다.
 
@@ -67,6 +68,9 @@ npm run dev -- --hostname 127.0.0.1 --port 3001
 app/
   layout.tsx          # Root layout and metadata
   page.tsx            # Public home
+  login/              # Login page and server actions
+  member/[role]/      # Server-authorized role homes
+  mypage/             # Own profile and approved roles
   app/layout.tsx      # Member preview shell
   app/page.tsx        # Member home
   app/[section]/page.tsx # Validated section routes
@@ -75,6 +79,9 @@ app/
   loading.tsx         # Loading state
   error.tsx           # Error boundary and retry
 components/
+  authenticated-shell.tsx # Authorized navigation and logout
+  login-form.tsx      # Login and own-profile forms
+  icon.tsx            # Local Lucide SVG icons
   public-home.tsx     # Philosophy and public introduction
   member-shell.tsx    # Role preview and shared navigation
   platform-previews.tsx # Planned community spaces
@@ -92,6 +99,7 @@ components/
   parent.tsx          # Approved report examples
   ui.tsx              # Shared cards, fields, and feedback
 lib/
+  auth/               # Server session, Supabase transport, role policy
   platform.ts         # Roles, relationships, routes, capacity policy
   member-profile.ts   # Profile validation and age calculation
   community.ts        # Fictional accounts, video model and guarded transitions
@@ -108,11 +116,14 @@ supabase/
   seed.sql            # Local fictional fixtures only
 scripts/
   test-database.mjs   # Isolated PostgreSQL policy checks
+  test-auth-integration.mjs # Production app with fictional Auth/REST
 docs/                 # Vision, philosophy, operations, architecture, access, roadmap
 artifacts/            # Screenshots by viewport size
+public/brand/         # Original brand icon, licensed photo, attribution
+public/icons/         # Vendored Lucide SVGs and license notices
 ```
 
-공개 홈페이지는 `/`, 회원 홈은 `/app`입니다. 회원 공간은 `notices`, `board`, `profile`, `register`, `accounts`, `videos`, `questions`, `journal`, `goals`, `lesson`, `teacher`, `parent`, `research`, `community`, `operations` 하위 주소로 이동합니다. 예: `/app/videos`. 기존 저장 키는 변경하지 않았습니다. 역할 선택은 저장하지 않으며 직접 접속 시 해당 화면의 기본 역할로 시연합니다.
+공개 홈페이지는 `/`, 로그인은 `/login`, 로그인 후 홈은 `/member/[role]`, 마이페이지는 `/mypage`입니다. 가상 체험은 개발 서버에서만 열립니다. `/app`의 기존 학습 시연 주소와 저장 키는 보존했습니다. 다만 `/app/community`는 마이페이지로 이동하며 커뮤니티 메뉴는 노출하지 않습니다. 미래 외부 라운지와 학습 기록은 기본적으로 분리하고 개인정보를 자동 전송하지 않습니다.
 
 ## 테스트와 빌드
 
@@ -123,7 +134,7 @@ npm run build
 npm run test:e2e
 ```
 
-- `test`: Node.js 기본 테스트 도구로 23개 핵심 로직·색상 대비 검사.
+- `test`: Node.js 기본 테스트 도구로 31개 인증·권한·핵심 로직·색상 대비 검사.
 - `typecheck`: TypeScript 타입 검사. 값의 종류나 함수 사용이 맞는지 확인.
 - `build`: 실행 배포용 파일 생성. 이 작업 환경에서 기본 Turbopack 빌드의 포트 제한 오류가 발생해 Next.js 공식 옵션인 `--webpack` 사용.
 - `test:e2e`: Playwright로 **설치된 Google Chrome**을 독립된 임시 프로필로 실행. 사용자 Chrome 계정·쿠키·방문 기록은 사용하지 않음. 개발 서버가 없으면 자동으로 켬.
@@ -163,14 +174,34 @@ http://127.0.0.1:3001에서 확인합니다. 개발 서버와 별도 포트를 �
 
 화면 미리보기: [공개 홈페이지](artifacts/desktop-public.png), [모바일 홈페이지](artifacts/mobile-public.png), [회원 홈](artifacts/desktop-home.png), [모바일 프로필](artifacts/mobile-profile.png), [영상 관리](artifacts/desktop-videos.png), [모바일 메뉴](artifacts/mobile-menu.png).
 
+### 밝은 브랜드 테마 검증
+
+- `npm run test`: 23/23 통과. 버튼 hover 색상 대비 실패를 수정한 뒤 재검증.
+- `npm run test:e2e`: 45/45 통과. 16개 경로의 글자 대비·가로 넘침을 모바일·태블릿·데스크톱에서 확인.
+- `npm run build`, `npm run typecheck`: 통과. 공개 홈페이지의 데스크톱·모바일 스크린샷을 육안 확인.
+- 원본 HTML 보존 및 제공 이미지와 복사본의 SHA-256 일치 확인. DB·인증·권한 구조와 의존성은 변경하지 않음.
+- 투명 배경·소형 전용 아이콘·PWA는 미준비. 실제 기기·Safari·화면낭독기 검증은 별도.
+
+### 로그인·Warm Library 리뉴얼 검증
+
+- `npm run test`: **31/31 통과**.
+- `npm run test:e2e`: **54/54 통과**. 기존 기능 회귀, 다섯 역할 홈·마이페이지·로그아웃, 비로그인·다른 역할·위조 쿠키 차단, 졸업생 메뉴 미노출, 홈페이지 외부 자동 요청 부재 검사.
+- `node scripts/test-auth-integration.mjs`: **7/7 통과**. 로컬 가상 Auth/REST를 사용한 프로덕션 앱 검사이며 실제 Supabase 통합 완료는 아님.
+- 최종 `npm run build`, `npm run typecheck`, `git diff --check`: 통과.
+- 새 테마의 토큰 대비, 기존 15개 경로와 로그인·역할별 홈·마이페이지의 실제 글자 대비 및 가로 넘침 검사 통과. 데스크톱·모바일 홈페이지와 로그인, 태블릿 마이페이지를 육안 확인.
+- 첫 인증 브라우저 검사에서 한국어 버튼 문구 불일치를 수정. 통합 검사에서는 Next.js의 별도 알림과 폼 오류를 구분하도록 범위를 좁힘. 리뉴얼 검사에서는 본문·푸터 양쪽에 보존된 공식 슬로건 중 본문을 명시해 선택자 충돌을 수정. 최종 전체 검사 통과.
+- DB 마이그레이션·seed·패키지·lockfile·환경 파일은 변경하지 않음. 실제 Supabase 연결, 초대 이메일, 배포, 개인정보 수집은 실행하지 않음.
+
+추가 화면: [로그인](artifacts/mobile-login.png), [역할별 홈](artifacts/desktop-member.png), [마이페이지](artifacts/tablet-mypage.png). 인증 설정과 제한은 [개발 환경 안내](docs/DEVELOPMENT_SETUP.md), 외부 라운지 경계는 [접근 권한 설계](docs/ACCESS_CONTROL.md)를 참조하세요.
+
 ## 남은 작업과 다음 단계
 
-실제 로그인, 데이터베이스, 서버 권한, AI API, 화상수업, 공개 배포는 연결하지 않았습니다. 실제 iPhone/iPad Safari 및 Mac Safari 검증도 아직 수행하지 않았습니다. Chrome의 모바일 화면 크기 검증은 실제 기기 검증을 대체하지 않습니다.
+실제 Supabase 인증·DB 연결, 초대 수락·동의, 회원별 학습 기록 저장, AI API, 화상수업, 공개 배포는 미완료입니다. 인증 코드는 가상 서버로 검증했으며 실제 프로젝트의 보안 검증을 대신하지 않습니다. 실제 iPhone/iPad Safari 및 Mac Safari 검증도 아직 수행하지 않았습니다. Chrome 화면 크기 검증은 실제 기기 검증을 대체하지 않습니다.
 
 1. Phase 2: 가상 데이터로 공지 작성·공개 범위, 사람의 질문·답변·후속 질문, 학생과 선생님의 관계를 구체화합니다.
 2. Phase 3: 초대제 인증, 관계별 서버 권한, Supabase의 행 수준 보안 (Row Level Security, RLS)을 구현합니다. RLS는 데이터베이스에서 사용자별로 읽고 쓸 수 있는 행을 제한하는 규칙입니다.
 3. 일기 본인 전용 권한, 학생 간 격리, 파일 권한, 동의·보관·삭제 정책과 정원 동시성 검증을 완료한 뒤 실제 베타를 시작합니다.
-4. 졸업생 모임, AI 보조, 결제·정산은 후속 검토 대상입니다. 수수료와 교육 정책을 임의로 확정하지 않습니다.
+4. 졸업생 모임은 초기 앱에서 개발하지 않습니다. 장기적으로 별도 서비스·DB로 검토하며, 운영처 확정 전 링크를 표시하거나 개인정보를 자동 전달하지 않습니다. AI 보조·결제·정산은 후속 검토 대상입니다.
 
 현재 기술 부채: 수업 체크리스트는 기존 고정 단계 인덱스를 사용하므로 편집 가능한 수업 모델을 도입할 때 버전별 기록 전환이 필요합니다. 정원 검사는 순수 함수로 준비했으나 서버·데이터베이스에서 강제하지 않습니다. 역할 선택과 메뉴 숨김은 보안이 아니며, 작성 중 임시 입력은 페이지 이동 시 유지하지 않습니다.
 

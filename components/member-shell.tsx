@@ -22,7 +22,7 @@ export function MemberShell({ children }: { children: ReactNode }) {
   const previousPath = useRef(pathname);
   const current = sectionFromPath(pathname);
   const links = Object.entries(sectionDefinitions)
-    .filter(([key, item]) => key !== "register" && item.roles.includes(role))
+    .filter(([key, item]) => key !== "register" && item.roles.includes(role) && (role !== "alumni" || key === "profile"))
     .map(([page, item]) => ({ page, label: item.label, icon: item.icon, href: item.path }));
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export function MemberShell({ children }: { children: ReactNode }) {
   return (
     <PreviewContext.Provider value={{ role, go }}><CommunityProvider>
       <a className="skip-link" href="#main-content">본문으로 바로가기</a>
-      <div className="app"><div className="workspace">
+      <div className="app" data-member-role={role}><div className="workspace">
         <Navigation links={links} current={current ?? ""} brandHref="/app">
           <div className="role-control">
             <label htmlFor="role">화면 역할 미리보기</label>

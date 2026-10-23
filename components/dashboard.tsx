@@ -15,7 +15,7 @@ import { useMemberPreview } from "./member-shell";
 import { MemberProfilePanel } from "./member-profile";
 import { AccountRelations } from "./account-relations";
 import { VideoLibrary } from "./video-library";
-import { BoardPreview, CommunityPreview, NoticesPreview, OperationsPreview, PreviewUnavailable, ResearchPreview, RoleDashboard } from "./platform-previews";
+import { BoardPreview, NoticesPreview, OperationsPreview, PreviewUnavailable, ResearchPreview, RoleDashboard } from "./platform-previews";
 
 const initialGoals: Goal[] = [];
 
@@ -50,7 +50,6 @@ export function Dashboard({ page }: { page: Section }) {
     {page === "notices" && <NoticesPreview role={role} />}
     {page === "board" && <BoardPreview />}
     {page === "research" && <ResearchPreview />}
-    {page === "community" && <CommunityPreview />}
     {page === "operations" && <OperationsPreview />}
   </>;
 }

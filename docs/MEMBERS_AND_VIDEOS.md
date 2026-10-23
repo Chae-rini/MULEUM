@@ -6,7 +6,7 @@
 
 - 기존 Next.js·TypeScript·Tailwind와 브라우저 학습 기록을 보존했다.
 - `/app/profile`, `/app/register`, `/app/accounts`, `/app/videos`는 가상 데이터 시연이다. 새 데이터는 React 메모리에서 회원 공간을 이동하는 동안 유지되고 새로고침하면 초기화한다. 개인정보를 Local Storage에 추가하지 않는다.
-- 실제 가입·로그인·이메일·초대 수락·YouTube API 호출은 없다. 기존 역할 선택은 인증이 아니다. 데모 자료는 브라우저 코드에서 볼 수 있다.
+- 실제 Supabase 연결·가입·이메일·초대 수락·YouTube API 호출은 없다. 별도 `/login`, `/member/[role]`, `/mypage`의 인증 코드를 추가하고 가상 Auth/REST 서버로 검증했다. 기존 `/app` 역할 선택은 계속 인증이 아니며 데모 자료는 브라우저 코드에서 볼 수 있다. 설정과 제한은 `DEVELOPMENT_SETUP.md`를 따른다.
 - SQL 마이그레이션은 준비하고 격리된 PostgreSQL 엔진에서 실행했다. 웹앱은 이 DB에 연결하지 않았다. SQL 정책의 통과를 실제 웹서비스 보안 완료로 해석하면 안 된다.
 - 기존 교사 화면의 학생 3명·리포트 예시는 기존 기능 그대로이며 새 관계 시연과 아직 통합하지 않았다. 실제 DB 연결 전 저장소를 일원화해야 한다.
 

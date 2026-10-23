@@ -61,7 +61,7 @@ export function capacityIssues(snapshot: CapacitySnapshot, action: "add_teacher"
 export const sectionDefinitions = {
   home: { path: "/app", label: "오늘의 물음", icon: "⌂", roles: Object.keys(roleLabels) as MemberRole[] },
   notices: { path: "/app/notices", label: "공지사항", icon: "▧", roles: Object.keys(roleLabels) as MemberRole[] },
-  board: { path: "/app/board", label: "질문게시판", icon: "↗", roles: ["student", "teacher", "alumni", "assistant", "operator", "administrator"] as MemberRole[] },
+  board: { path: "/app/board", label: "질문게시판", icon: "↗", roles: ["student", "teacher", "assistant", "operator", "administrator"] as MemberRole[] },
   profile: { path: "/app/profile", label: "나의 프로필", icon: "○", roles: Object.keys(roleLabels) as MemberRole[] },
   register: { path: "/app/register", label: "초대 등록 시연", icon: "○", roles: Object.keys(roleLabels) as MemberRole[] },
   accounts: { path: "/app/accounts", label: "회원과 연결", icon: "◇", roles: ["parent", "teacher", "administrator"] as MemberRole[] },
@@ -73,7 +73,7 @@ export const sectionDefinitions = {
   teacher: { path: "/app/teacher", label: "지도자 공간", icon: "◈", roles: ["teacher"] as MemberRole[] },
   parent: { path: "/app/parent", label: "성장 리포트", icon: "♡", roles: ["parent"] as MemberRole[] },
   research: { path: "/app/research", label: "교육팀 연구", icon: "◇", roles: ["teacher"] as MemberRole[] },
-  community: { path: "/app/community", label: "졸업생 공동체", icon: "♧", roles: ["alumni", "operator"] as MemberRole[] },
+  community: { path: "/app/community", label: "졸업생 계정 안내", icon: "♧", roles: [] as MemberRole[] },
   operations: { path: "/app/operations", label: "운영 공간", icon: "⊙", roles: ["operator", "administrator"] as MemberRole[] },
 };
 export type Section = keyof typeof sectionDefinitions;
@@ -94,7 +94,7 @@ export function defaultPreviewRole(pathname: string): MemberRole {
 export function roleHome(role: MemberRole): Section {
   if (role === "teacher") return "teacher";
   if (role === "parent") return "parent";
-  if (role === "alumni") return "community";
+  if (role === "alumni") return "profile";
   if (role === "assistant") return "board";
   if (role === "operator" || role === "administrator") return "operations";
   return "home";

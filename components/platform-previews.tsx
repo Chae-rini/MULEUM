@@ -21,7 +21,6 @@ export function NoticesPreview({ role }: { role: MemberRole }) {
   const scopes = ["전체 공지"];
   if (["student", "parent", "teacher"].includes(role)) scopes.push("수업별 공지");
   if (role === "teacher") scopes.push("선생님 전용");
-  if (role === "alumni") scopes.push("졸업생 전용");
   const selected = scopes.includes(scope) ? scope : "전체 공지";
   return <><Heading eyebrow="NOTICE BOARD" title="공지사항" description="우리에게 필요한 소식을, 필요한 범위 안에서 나눠요." />
     <DemoLabel>분류와 공개 범위를 살펴보는 가상 공지예요. 실제 공지 게시·수신자 지정·권한 검사는 아직 구현되지 않았어요.</DemoLabel>
@@ -62,7 +61,7 @@ export function OperationsPreview() {
 }
 
 export function RoleDashboard({ role }: { role: MemberRole }) {
-  const available = Object.entries(sectionDefinitions).filter(([key, item]) => key !== "home" && item.roles.includes(role));
+  const available = Object.entries(sectionDefinitions).filter(([key, item]) => key !== "home" && item.roles.includes(role) && (role !== "alumni" || key === "profile"));
   return <><Heading eyebrow="OUR LEARNING SPACE" title={`${roleLabels[role]}의 배움 공간`} description="각자의 역할에서 필요한 일을 살펴보고, 사람과 사람의 배움을 이어가요." /><div className="stats-grid">{available.map(([key, item]) => <Card key={key}><h2>{item.label}</h2><p className="small">가상 데이터로 화면 구조를 살펴보세요.</p><Link href={item.path} className="text-button">{item.label} 살펴보기 ↗</Link></Card>)}</div></>;
 }
 

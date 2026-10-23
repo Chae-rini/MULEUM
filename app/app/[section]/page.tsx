@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Dashboard } from "@/components/dashboard";
 import { isSection, sectionDefinitions } from "@/lib/platform";
 
@@ -14,5 +14,6 @@ export async function generateMetadata({ params }: { params: Promise<{ section: 
 export default async function MemberPage({ params }: { params: Promise<{ section: string }> }) {
   const { section } = await params;
   if (!isSection(section) || section === "home") notFound();
+  if (section === "community") redirect("/mypage");
   return <Dashboard page={section} />;
 }

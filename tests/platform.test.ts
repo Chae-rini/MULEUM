@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { capacityIssues, defaultPreviewRole, isSection, roleHome, sectionFromPath, type MemberProfile, type RoleAssignment } from "../lib/platform.ts";
+import { capacityIssues, defaultPreviewRole, isSection, roleHome, sectionFromPath, sectionDefinitions, type MemberProfile, type RoleAssignment } from "../lib/platform.ts";
 
 test("capacity accepts the final available student place and rejects full limits", () => {
   assert.deepEqual(capacityIssues({ activeTeachers: 10, activeStudents: 99, assignedActiveStudents: 9 }, "add_student"), []);
@@ -36,4 +36,7 @@ test("route registry rejects unknown and inherited property names", () => {
   assert.equal(defaultPreviewRole("/app/teacher"), "teacher");
   assert.equal(roleHome("assistant"), "board");
   assert.equal(roleHome("administrator"), "operations");
+  assert.equal(roleHome("alumni"), "profile");
+  assert.deepEqual(sectionDefinitions.community.roles, []);
+  assert.equal(sectionDefinitions.board.roles.includes("alumni"), false);
 });

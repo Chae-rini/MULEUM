@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { Icon } from "./icon";
 
 interface NavigationItem<T extends string> {
   page: T;
@@ -13,7 +15,7 @@ interface NavigationItem<T extends string> {
 function Brand({ href }: { href: string }) {
   return (
     <Link className="logo" href={href} aria-label="물음 홈">
-      <span className="brand-mark">?</span>
+      <Image className="brand-mark" src="/brand/muleum-icon-blue.png" alt="" width={56} height={56} sizes="56px" />
       <span>
         <strong>물음<span className="brand-english">MULEUM</span></strong>
         <small>모든 배움은 하나의 질문에서</small>
@@ -62,8 +64,9 @@ export function Navigation<T extends string>({ links, current, brandHref = "/", 
         href={item.href}
         onClick={closeMenu}
         aria-current={current === item.page ? "page" : undefined}
+        data-section={item.page}
       >
-        <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+        <Icon className="nav-icon" name={item.icon} />
         {item.label}
       </Link>
     ));
@@ -82,7 +85,7 @@ export function Navigation<T extends string>({ links, current, brandHref = "/", 
             aria-expanded={open}
             onClick={() => { dialog.current?.showModal(); setOpen(true); }}
           >
-            <span aria-hidden="true">☰</span>
+            <Icon name="menu" />
           </button>
           <Brand href={brandHref} />
         </div>
@@ -117,7 +120,7 @@ export function Navigation<T extends string>({ links, current, brandHref = "/", 
       >
         <div className="drawer-header">
           <h2 id="mobile-menu-title">물음 메뉴</h2>
-          <button type="button" className="menu-close" aria-label="메뉴 닫기" onClick={closeMenu} autoFocus>✕</button>
+          <button type="button" className="menu-close" aria-label="메뉴 닫기" onClick={closeMenu} autoFocus><Icon name="x" /></button>
         </div>
         <p className="nav-caption">MY LEARNING SPACE</p>
         <nav className="drawer-nav" aria-label="모바일 메뉴">{menuItems()}</nav>
