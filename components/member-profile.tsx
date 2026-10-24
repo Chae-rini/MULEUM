@@ -1,17 +1,16 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
 import { ageCategory, ageOn, genderLabels, validateProfile, type Gender } from "@/lib/member-profile";
 import { demoIds } from "@/lib/community";
 import { useMemberPreview } from "./member-shell";
 import { useCommunity } from "./community-provider";
 import { Card, Feedback, Heading, DemoNotice } from "./ui";
-export function MemberProfilePanel({registration=false}:{registration?:boolean}){
+export function MemberProfilePanel(){
   const {role}=useMemberPreview(); const {state,setState}=useCommunity();
   const id=demoIds[role];const profile=state.profiles[id];const optional=state.optional[id]??{gender:null,gender_description:null};
   const [gender,setGender]=useState<Gender|null>(optional.gender);const [description,setDescription]=useState(optional.gender_description??"");
   const [error,setError]=useState("");const [success,setSuccess]=useState("");
-  return <><Heading eyebrow="MY PROFILE" title={registration?"초대 회원 등록 시연":"나의 프로필"} description="필요한 정보만, 내가 선택한 범위로 관리해요."/><DemoNotice>가상 프로필 등록·수정 시연이에요. 입력은 현재 화면 세션에만 보관하고 새로고침하면 초기화해요. 실제 이름·생년월일·성별은 입력하지 마세요. 실제 회원가입은 닫혀 있어요.</DemoNotice>{registration?<div className="note mb-5"><strong>실제 가입 활성화 전 확인할 것</strong><ol className="principle-list"><li>초대의 대상·만료·사용 여부 확인</li><li>개인정보 처리방침과 필요한 동의 확인</li><li>만 14세 미만 법정대리인 동의 및 관계 확인</li><li>독립 계정 인증 후 관리자 승인</li></ol><button className="button" disabled>실제 회원가입 · 아직 준비 중</button></div>:<Link className="text-button mb-5" href="/app/register">초대 회원 등록 절차 살펴보기 ↗</Link>}<div className="content-grid"><Card><form onSubmit={event=>{event.preventDefault();const data=new FormData(event.currentTarget);const next={...profile,full_name:String(data.get("full_name")??"").trim(),birth_date:String(data.get("birth_date")??""),residence_region:String(data.get("residence_region")??"").trim(),updated_at:new Date().toISOString()};const extra={gender,gender_description:gender==="other"?description.trim()||null:null};const problem=validateProfile(next,extra);setError(problem??"");setSuccess("");if(problem)return;setState(s=>({...s,profiles:{...s.profiles,[id]:next},optional:{...s.optional,[id]:extra}}));setSuccess("가상 프로필을 저장했어요. 실제 가입은 진행되지 않았어요.");}}>
+  return <><Heading eyebrow="MY PROFILE" title="나의 프로필" description="필요한 정보만, 내가 선택한 범위로 관리해요."/><DemoNotice>가상 프로필 등록·수정 시연이에요. 입력은 현재 화면 세션에만 보관하고 새로고침하면 초기화해요. 실제 이름·생년월일·성별은 입력하지 마세요. 실제 회원가입은 닫혀 있어요.</DemoNotice><div className="content-grid"><Card><form onSubmit={event=>{event.preventDefault();const data=new FormData(event.currentTarget);const next={...profile,full_name:String(data.get("full_name")??"").trim(),birth_date:String(data.get("birth_date")??""),residence_region:String(data.get("residence_region")??"").trim(),updated_at:new Date().toISOString()};const extra={gender,gender_description:gender==="other"?description.trim()||null:null};const problem=validateProfile(next,extra);setError(problem??"");setSuccess("");if(problem)return;setState(s=>({...s,profiles:{...s.profiles,[id]:next},optional:{...s.optional,[id]:extra}}));setSuccess("가상 프로필을 저장했어요. 실제 가입은 진행되지 않았어요.");}}>
     <div className="field"><label htmlFor="full_name">성명 · 필수</label><input id="full_name" name="full_name" type="text" defaultValue={profile.full_name} required maxLength={80}/></div>
     <div className="field"><label htmlFor="birth_date">생년월일 · 필수</label><input id="birth_date" name="birth_date" type="date" defaultValue={profile.birth_date} required/></div>
     <div className="field"><label htmlFor="residence_region">거주 지역 · 필수</label><input id="residence_region" name="residence_region" type="text" defaultValue={profile.residence_region} required maxLength={80} aria-describedby="region-help"/><span id="region-help" className="hint">시·군·구까지만 입력해요. 도로명·상세 주소는 수집하지 않아요.</span></div>

@@ -1,7 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 async function menu(page:Page,label:string){const narrow=(page.viewportSize()?.width??1440)<=690;if(narrow)await page.getByRole('button',{name:'메뉴 열기',exact:true}).click();const link=page.getByRole('navigation',{name:narrow?'모바일 메뉴':'메인 메뉴',exact:true}).getByRole('link',{name:label,exact:true});const href=await link.getAttribute('href');await link.click();await expect(page).toHaveURL(new RegExp(`${href}$`));}
 test('rendered text has AA contrast on public, student, teacher and administrator screens',async({page})=>{
- for(const path of ['/','/app','/app/teacher','/app/parent','/app/operations','/app/accounts','/app/profile','/app/register','/app/board','/app/notices','/app/journal','/app/lesson','/app/videos','/app/questions','/app/goals']){
+ for(const path of ['/','/app','/app/teacher','/app/parent','/app/accounts','/app/profile','/app/journal','/app/lesson','/app/videos','/app/questions','/app/goals']){
   await page.goto(path);await expect(page.getByRole('heading',{level:1})).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   const failures=await page.evaluate(()=>{
@@ -21,11 +21,11 @@ test('rendered text has AA contrast on public, student, teacher and administrato
 });
 test('profile optional gender is private and persists only in the demo session',async({page},info)=>{
  await page.goto('/app/profile');await expect(page.getByLabel('성별 선택')).toHaveValue('');
- await page.getByRole('link',{name:'초대 회원 등록 절차 살펴보기 ↗'}).click();await expect(page.getByRole('heading',{name:'초대 회원 등록 시연'})).toBeVisible();await expect(page.getByRole('button',{name:'실제 회원가입 · 아직 준비 중'})).toBeDisabled();await menu(page,'나의 프로필');await expect(page.getByRole('heading',{name:'나의 프로필',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'나의 프로필',exact:true})).toBeVisible();
  await page.getByLabel('성별 선택').selectOption('other');await expect(page.getByLabel('나의 직접 표현 · 선택')).toBeVisible();
  await page.getByRole('button',{name:'가상 프로필 저장'}).click();await expect(page.getByRole('status')).toContainText('저장했어요');
  await page.getByLabel('나의 직접 표현 · 선택').fill('PRIVATE_GENDER_UI');await page.getByRole('button',{name:'가상 프로필 저장'}).click();
- await menu(page,'공지사항');await menu(page,'나의 프로필');await expect(page.getByLabel('나의 직접 표현 · 선택')).toHaveValue('PRIVATE_GENDER_UI');
+ await menu(page,'복습 자료실');await menu(page,'나의 프로필');await expect(page.getByLabel('나의 직접 표현 · 선택')).toHaveValue('PRIVATE_GENDER_UI');
  await page.getByLabel('성별 선택').selectOption('prefer_not_to_say');await expect(page.getByLabel('나의 직접 표현 · 선택')).toHaveCount(0);await page.getByRole('button',{name:'가상 프로필 저장'}).click();
  expect(await page.evaluate(()=>Object.values(localStorage).join(''))).not.toContain('PRIVATE_GENDER_UI');
  await page.screenshot({path:`artifacts/${info.project.name}-profile.png`,fullPage:true});

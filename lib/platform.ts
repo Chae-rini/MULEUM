@@ -60,10 +60,7 @@ export function capacityIssues(snapshot: CapacitySnapshot, action: "add_teacher"
 
 export const sectionDefinitions = {
   home: { path: "/app", label: "오늘의 물음", icon: "⌂", roles: Object.keys(roleLabels) as MemberRole[] },
-  notices: { path: "/app/notices", label: "공지사항", icon: "▧", roles: Object.keys(roleLabels) as MemberRole[] },
-  board: { path: "/app/board", label: "질문게시판", icon: "↗", roles: ["student", "teacher", "assistant", "operator", "administrator"] as MemberRole[] },
   profile: { path: "/app/profile", label: "나의 프로필", icon: "○", roles: Object.keys(roleLabels) as MemberRole[] },
-  register: { path: "/app/register", label: "초대 등록 시연", icon: "○", roles: Object.keys(roleLabels) as MemberRole[] },
   accounts: { path: "/app/accounts", label: "회원과 연결", icon: "◇", roles: ["parent", "teacher", "administrator"] as MemberRole[] },
   videos: { path: "/app/videos", label: "복습 자료실", icon: "▷", roles: ["student", "teacher", "administrator"] as MemberRole[] },
   questions: { path: "/app/questions", label: "나의 물음", icon: "?", roles: ["student"] as MemberRole[] },
@@ -72,9 +69,6 @@ export const sectionDefinitions = {
   lesson: { path: "/app/lesson", label: "과외 수업", icon: "▤", roles: ["student", "teacher"] as MemberRole[] },
   teacher: { path: "/app/teacher", label: "지도자 공간", icon: "◈", roles: ["teacher"] as MemberRole[] },
   parent: { path: "/app/parent", label: "성장 리포트", icon: "♡", roles: ["parent"] as MemberRole[] },
-  research: { path: "/app/research", label: "교육팀 연구", icon: "◇", roles: ["teacher"] as MemberRole[] },
-  community: { path: "/app/community", label: "졸업생 계정 안내", icon: "♧", roles: [] as MemberRole[] },
-  operations: { path: "/app/operations", label: "운영 공간", icon: "⊙", roles: ["operator", "administrator"] as MemberRole[] },
 };
 export type Section = keyof typeof sectionDefinitions;
 export function isSection(value: string): value is Section {
@@ -85,17 +79,14 @@ export function sectionFromPath(pathname: string): Section | null {
 }
 export function defaultPreviewRole(pathname: string): MemberRole {
   if (pathname === "/app/accounts") return "administrator";
-  if (pathname === "/app/teacher" || pathname === "/app/research") return "teacher";
+  if (pathname === "/app/teacher") return "teacher";
   if (pathname === "/app/parent") return "parent";
-  if (pathname === "/app/community") return "alumni";
-  if (pathname === "/app/operations") return "operator";
   return "student";
 }
 export function roleHome(role: MemberRole): Section {
   if (role === "teacher") return "teacher";
   if (role === "parent") return "parent";
   if (role === "alumni") return "profile";
-  if (role === "assistant") return "board";
-  if (role === "operator" || role === "administrator") return "operations";
+  if (role === "administrator") return "accounts";
   return "home";
 }

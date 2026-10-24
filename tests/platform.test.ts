@@ -34,9 +34,10 @@ test("route registry rejects unknown and inherited property names", () => {
   assert.equal(isSection("constructor"), false);
   assert.equal(isSection("__proto__"), false);
   assert.equal(defaultPreviewRole("/app/teacher"), "teacher");
-  assert.equal(roleHome("assistant"), "board");
-  assert.equal(roleHome("administrator"), "operations");
+  assert.equal(roleHome("assistant"), "home");
+  assert.equal(roleHome("administrator"), "accounts");
   assert.equal(roleHome("alumni"), "profile");
-  assert.deepEqual(sectionDefinitions.community.roles, []);
-  assert.equal(sectionDefinitions.board.roles.includes("alumni"), false);
+  for (const removed of ["notices", "board", "register", "research", "community", "operations"]) assert.equal(isSection(removed), false);
+  assert.equal(sectionFromPath("/app/register"), null);
+  assert.deepEqual(sectionDefinitions.profile.roles.includes("alumni"), true);
 });
