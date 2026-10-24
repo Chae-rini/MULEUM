@@ -35,6 +35,14 @@
   --on-brand: var(--text-primary);
   --shadow-color: #14284B14;
   --overlay: #14284B99;
+  --on-navy-muted: #C9DAEA;
+  /* Day concept: a library above the clouds. Sky at the top of public bands, clouds below, small ✦ stars stay by day. */
+  --sky-top: #D6E8F8;
+  --cloud: var(--surface);
+  --cloud-shade: #EEF4FB;
+  --star: var(--brand-primary);
+  /* Warm reading light; the dark theme keeps it as the sunlight that remains at night. */
+  --reading-light: var(--surface-paper);
 }
 
 @theme inline {

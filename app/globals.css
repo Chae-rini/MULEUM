@@ -212,11 +212,22 @@ input[aria-invalid=true],textarea[aria-invalid=true],select[aria-invalid=true] {
 
 /* Login */
 .auth-page { max-width:560px; margin:0 auto; padding:32px 24px 64px; }
-.auth-intro { margin:24px 0 32px; padding:48px 0 40px; text-align:center; background:var(--brand-action); border-image:conic-gradient(var(--brand-action) 0 0) fill 0 / / 0 100vmax; }
-.auth-intro img { display:block; width:72px; height:72px; margin:0 auto 20px; border-radius:16px; }
-.auth-intro .eyebrow { color:var(--brand-primary-light); }
-.auth-intro h1 { color:var(--primary-foreground); }
-.auth-intro .muted { margin:0; color:var(--on-navy); }
+/* Sky band: sky at the top fading through a lighter sky into the page, with a cloud island the logo floats above.
+   The solid colour is the darker end, so contrast checks measure the worst case. */
+.auth-intro { position:relative; margin:24px 0 56px; padding:48px 0 76px; text-align:center; background:var(--sky-top); border-image:linear-gradient(to bottom, var(--sky-top), var(--surface-blue) 62%, var(--surface-paper)) fill 0 / / 0 100vmax; }
+.auth-intro img { position:relative; display:block; width:72px; height:72px; margin:0 auto 20px; border-radius:16px; }
+.auth-intro .eyebrow { display:inline-flex; align-items:center; gap:8px; color:var(--text-strong); }
+.auth-intro h1 { color:var(--text-strong); }
+.auth-intro .muted { position:relative; margin:0; color:var(--text-secondary); }
+.auth-intro .cloud-island { position:absolute; left:50%; bottom:-48px; width:min(100%, 420px); height:auto; transform:translateX(-50%); }
+
+/* Day-concept decorations (components/sky.tsx) */
+.sparkle { display:inline-block; width:.85em; height:.85em; flex-shrink:0; fill:var(--star); vertical-align:-.08em; }
+.cloud-shade { fill:var(--cloud-shade); }
+.cloud-front { fill:var(--cloud); }
+.cloud-mist { fill:var(--cloud); opacity:.62; }
+.cloud-drift { animation:cloud-drift 90s ease-in-out infinite alternate; }
+@keyframes cloud-drift { from { transform:translateX(-24px); } to { transform:translateX(24px); } }
 .auth-page .card { margin:20px 0; }
 .auth-fields { min-width:0; margin:0; padding:0; border:0; }
 .auth-fields input { width:100%; min-width:0; padding:12px 14px; border:1px solid var(--control-border); border-radius:12px; background:var(--surface); color:var(--ink); }
@@ -320,4 +331,5 @@ input[aria-invalid=true],textarea[aria-invalid=true],select[aria-invalid=true] {
 @media(prefers-reduced-motion:reduce) {
   *,*::before,*::after { transition:none!important; scroll-behavior:auto!important; }
   .mobile-drawer[open] { animation:none; }
+  .cloud-drift { animation:none; transform:none; }
 }

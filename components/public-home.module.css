@@ -1,21 +1,21 @@
-/* Home v2 palette is scoped here so app/theme.css and the member space stay unchanged. */
+/* Home aliases point at app/theme.css tokens; no colour values live in this file. */
 .home {
-  --home-navy: #14284B;
-  --home-blue: #2F6FA8;
-  --home-sky: #E6F1FA;
-  --home-paper: #F7F3EC;
-  --home-sky-ink: #A9CDEB;
-  --home-ink: #1E2A3A;
-  --home-muted: #5B6778;
-  --home-line: #D8E2EC;
-  --home-rule: #7FB3DD;
-  --home-on-navy: #D5E3F1;
-  --home-caption: #C9DAEA;
-  --home-white: #FFFFFF;
-  --home-overlay: rgb(20 40 75 / .78);
-  --home-rule-on-navy: rgb(169 205 235 / .5);
-  --home-line-on-navy: rgb(169 205 235 / .35);
-  --home-outline-on-navy: rgb(230 241 250 / .6);
+  --home-navy: var(--brand-action);
+  --home-blue: var(--accent-ink);
+  --home-sky: var(--surface-blue);
+  --home-paper: var(--surface-paper);
+  --home-sky-ink: var(--brand-primary-light);
+  --home-ink: var(--text-primary);
+  --home-muted: var(--text-secondary);
+  --home-line: var(--border-default);
+  --home-rule: var(--brand-primary);
+  --home-on-navy: var(--on-navy);
+  --home-caption: var(--on-navy-muted);
+  --home-white: var(--surface);
+  --home-overlay: color-mix(in srgb, var(--brand-action) 78%, transparent);
+  --home-rule-on-navy: color-mix(in srgb, var(--brand-primary-light) 50%, transparent);
+  --home-line-on-navy: color-mix(in srgb, var(--brand-primary-light) 35%, transparent);
+  --home-outline-on-navy: color-mix(in srgb, var(--surface-blue) 60%, transparent);
   min-height: 100vh;
   background: var(--home-white);
   color: var(--home-ink);
@@ -43,22 +43,31 @@
 .headerCta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 12px; background: var(--home-navy); color: var(--home-white); font-size: 14px; font-weight: 700; white-space: nowrap; }
 .headerCta:hover { background: var(--home-blue); }
 
-/* Hero: the solid navy sits under the photo so the overlay always reads as navy, even before the image loads. */
-.hero { background: var(--home-navy) url("/brand/library-lounge.jpg") center / cover no-repeat; }
-.heroOverlay { background: var(--home-overlay); }
-.heroInner { display: flex; flex-direction: column; gap: 28px; padding-block: 120px 112px; }
-.heroEyebrow { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .14em; color: var(--home-sky-ink); }
-.heroTitle { margin: 0; font-size: clamp(38px, 5.4vw, 68px); line-height: 1.22; font-weight: 800; letter-spacing: -.03em; color: var(--home-white); }
-.heroTitle span { color: var(--home-sky-ink); }
-.heroLead { margin: 0; max-width: 560px; font-size: 18px; line-height: 1.75; color: var(--home-sky); }
+/* Hero: a library above the clouds. The photo shows through a sky overlay that never drops below --hero-scrim where
+   text sits (tests/design.test.ts checks text against that overlay over a black pixel); a cloud bank closes the bottom.
+   The solid sky under the photo keeps the hero readable before the image loads. */
+.hero { --hero-scrim: 92%; --hero-text-zone: max(860px, calc(50% + 320px)); --cloud-bank-height: clamp(72px, 8vw, 128px); position: relative; background: var(--sky-top) url("/brand/library-lounge.jpg") center / cover no-repeat; }
+.heroOverlay {
+  position: relative; overflow: hidden;
+  background:
+    linear-gradient(to bottom, transparent 40%, color-mix(in srgb, var(--surface-blue) 70%, transparent) 100%),
+    linear-gradient(90deg, color-mix(in srgb, var(--sky-top) var(--hero-scrim), transparent) 0 var(--hero-text-zone), color-mix(in srgb, var(--sky-top) 55%, transparent) 100%);
+}
+.heroInner { position: relative; display: flex; flex-direction: column; gap: 28px; padding-block: 120px calc(var(--cloud-bank-height) + 24px); }
+.heroEyebrow { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .14em; color: var(--home-navy); }
+.heroTitle { margin: 0; font-size: clamp(38px, 5.4vw, 68px); line-height: 1.22; font-weight: 800; letter-spacing: -.03em; color: var(--home-navy); }
+/* Accent blue only reaches 3:1 over the overlay, so it stays on this large title text. */
+.heroTitle span { color: var(--home-blue); }
+.heroLead { margin: 0; max-width: 560px; font-size: 18px; line-height: 1.75; color: var(--home-ink); }
 .heroActions { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 8px; }
 .heroPrimary, .heroSecondary { display: inline-flex; align-items: center; gap: 10px; padding: 16px 24px; border-radius: 12px; font-size: 16px; }
-.heroPrimary { background: var(--home-sky); color: var(--home-navy); font-weight: 700; }
-.heroPrimary:hover { background: var(--home-white); }
+.heroPrimary { background: var(--home-navy); color: var(--home-white); font-weight: 700; }
+.heroPrimary:hover { background: var(--home-blue); }
 .heroPrimary :global(.lucide-icon) { width: 18px; height: 18px; }
-.heroSecondary { border: 1px solid var(--home-outline-on-navy); color: var(--home-white); font-weight: 500; }
-.heroSecondary:hover { border-color: var(--home-white); }
-.heroCredit { margin: 40px 0 0; font-size: 12px; line-height: 1.6; color: var(--home-caption); }
+.heroSecondary { border: 1px solid var(--home-line); background: var(--home-white); color: var(--home-navy); font-weight: 500; }
+.heroSecondary:hover { border-color: var(--home-navy); }
+.heroCredit { margin: 40px 0 0; font-size: 12px; line-height: 1.6; color: var(--home-ink); }
+.hero :global(.cloud-bank) { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: var(--cloud-bank-height); }
 
 /* Shared section rhythm */
 .section { padding-block: 112px; background: var(--home-white); scroll-margin-top: 0; }
@@ -66,7 +75,7 @@
 .navy { background: var(--home-navy); }
 .sectionInner { display: flex; flex-direction: column; gap: 48px; }
 .sectionLabel { display: flex; flex-direction: column; gap: 14px; }
-.sectionLabel p { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .12em; color: var(--home-blue); }
+.sectionLabel p { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .12em; color: var(--home-blue); }
 .rule { height: 1px; background: var(--home-rule); }
 .sectionLabelDark p { color: var(--home-sky-ink); }
 .sectionLabelDark .rule { background: var(--home-rule-on-navy); }
@@ -127,7 +136,7 @@
 /* Beta */
 .beta { padding-block: 104px; }
 .betaInner { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
-.betaEyebrow { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .12em; color: var(--home-blue); }
+.betaEyebrow { display: inline-flex; align-items: center; gap: 10px; margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .12em; color: var(--home-blue); }
 .betaText { margin: 0; max-width: 560px; font-size: 16px; line-height: 1.8; color: var(--home-muted); }
 .betaInvite { margin: 0; max-width: 560px; font-size: 15px; line-height: 1.8; color: var(--home-ink); }
 .betaActions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 12px; }
@@ -146,8 +155,8 @@
 .footerLinks { display: flex; flex-wrap: wrap; gap: 0 24px; }
 .footerInner a { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--home-blue); text-decoration: underline; text-underline-offset: 4px; }
 
-/* Keyboard focus must stay visible on the dark hero and navy section. */
-.hero :focus-visible, .navy :focus-visible { outline-color: var(--home-sky-ink); }
+/* Keyboard focus must stay visible on the navy section; the light hero keeps the default focus ring. */
+.navy :focus-visible { outline-color: var(--home-sky-ink); }
 .home :global(#public-content:focus) { outline: none; }
 
 @media (min-width: 960px) {

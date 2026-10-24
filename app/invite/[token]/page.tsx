@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CloudIsland, Sparkle } from "@/components/sky";
 import Link from "next/link";
 import { authConfig } from "@/lib/auth/supabase";
 import { siteOrigin } from "@/lib/auth/oauth";
@@ -13,7 +14,7 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
   const enabled = !!authConfig(process.env) && !!siteOrigin(process.env);
   return <main className="auth-page" id="main-content">
     <Link href="/" className="text-button">← 물음 소개</Link>
-    <div className="auth-intro"><Image src="/brand/muleum-icon-blue.png" alt="물음" width={100} height={100} priority /><p className="eyebrow">YOU ARE INVITED</p><h1>물음에 초대받았어요</h1><p className="muted">질문으로 만나고, 함께 자라는 물음.</p></div>
+    <div className="auth-intro"><CloudIsland /><Image src="/brand/muleum-icon-sky.png" alt="물음" width={100} height={100} priority /><p className="eyebrow"><Sparkle />YOU ARE INVITED</p><h1>물음에 초대받았어요</h1><p className="muted">질문으로 만나고, 함께 자라는 물음.</p></div>
     <section className="card"><h2>초대받은 구글 계정으로 시작하기</h2>
       {!valid ? <p className="notice error" role="alert">올바르지 않은 초대 링크예요. 관리자에게 받은 링크를 그대로 열어 주세요.</p> : <>
         <p>관리자가 초대한 구글 계정으로 로그인하면 가입이 끝나요. 별도의 회원가입 양식은 없어요.</p>

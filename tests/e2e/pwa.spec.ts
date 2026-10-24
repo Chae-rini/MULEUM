@@ -5,11 +5,18 @@ test('manifest and worker install without requesting notification consent or cac
   const manifest = await (await page.request.get('/manifest.webmanifest')).json();
   expect(manifest.start_url).toBe('/member');
   expect(manifest.display).toBe('standalone');
-  for (const size of [192, 512]) {
-    expect(await page.evaluate(async size => {
-      const image = new Image(); image.src = `/brand/pwa-${size}.png`; await image.decode(); return image.naturalWidth;
-    }, size)).toBe(size);
+  expect(manifest.icons.map((icon: { src: string; sizes: string; purpose: string }) => `${icon.purpose} ${icon.sizes} ${icon.src}`)).toEqual([
+    'any 192x192 /brand/muleum-icon-sky-192.png',
+    'any 512x512 /brand/muleum-icon-sky-512.png',
+    'maskable 512x512 /brand/muleum-icon-sky-maskable-512.png',
+  ]);
+  for (const [src, size] of [...manifest.icons.map((icon: { src: string; sizes: string }) => [icon.src, Number(icon.sizes.split('x')[0])]),
+    ['/brand/muleum-icon-sky-apple-180.png', 180], ['/brand/muleum-icon-sky-32.png', 32], ['/brand/muleum-icon-sky-16.png', 16]] as [string, number][]) {
+    expect(await page.evaluate(async src => {
+      const image = new Image(); image.src = src; await image.decode(); return [image.naturalWidth, image.naturalHeight];
+    }, src)).toEqual([size, size]);
   }
+  expect(await page.locator('link[rel="apple-touch-icon"]').getAttribute('href')).toBe('/brand/muleum-icon-sky-apple-180.png');
   expect(await page.evaluate(async () => (await navigator.serviceWorker.ready).scope)).toContain('127.0.0.1:3000/');
   expect(await page.evaluate(() => Notification.permission)).toBe('default');
   expect(await page.evaluate(() => caches.keys())).toEqual([]);

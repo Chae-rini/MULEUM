@@ -6,6 +6,10 @@ export default function manifest(): MetadataRoute.Manifest {
     description: '질문으로 만나고 함께 배우는 물음',
     start_url: '/member', scope: '/', display: 'standalone',
     background_color: '#FFFFFF', theme_color: '#FFFFFF',
-    icons: [192, 512].map(size => ({ src: `/brand/pwa-${size}.png`, sizes: `${size}x${size}`, type: 'image/png', purpose: 'any' })),
+    icons: [
+      ...[192, 512].map(size => ({ src: `/brand/muleum-icon-sky-${size}.png`, sizes: `${size}x${size}`, type: 'image/png', purpose: 'any' as const })),
+      // Full-bleed square with the cloud inside the central 80% safe zone, so launcher masks never clip it.
+      { src: '/brand/muleum-icon-sky-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' as const },
+    ],
   };
 }

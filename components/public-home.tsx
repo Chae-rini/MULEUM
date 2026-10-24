@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Navigation } from "./navigation";
 import { Icon } from "./icon";
+import { CloudBank, Sparkle } from "./sky";
 import styles from "./public-home.module.css";
 
 const links = [
@@ -39,7 +40,7 @@ const people = [
 ] as const;
 
 function SectionLabel({ number, label, dark = false }: { number: string; label: string; dark?: boolean }) {
-  return <div className={`${styles.sectionLabel} ${dark ? styles.sectionLabelDark : ""}`}><p>{number}{"   "}{label}</p><div className={styles.rule} aria-hidden="true" /></div>;
+  return <div className={`${styles.sectionLabel} ${dark ? styles.sectionLabelDark : ""}`}><p><Sparkle />{number}{"   "}{label}</p><div className={styles.rule} aria-hidden="true" /></div>;
 }
 
 export function PublicHome() {
@@ -53,7 +54,7 @@ export function PublicHome() {
 
       <main id="public-content" tabIndex={-1}>
         <section id="top" className={styles.hero}><div className={styles.heroOverlay}><div className={`${styles.container} ${styles.heroInner}`}>
-          <p className={styles.heroEyebrow}>MULEUM · 질문으로 배우는 교육 공동체</p>
+          <p className={styles.heroEyebrow}><Sparkle />MULEUM · 질문으로 배우는 교육 공동체</p>
           <h1 className={styles.heroTitle}>배움이 머무는 곳,<br /><span>질문이 시작되는 곳.</span></h1>
           <p className={styles.heroLead}>모든 배움은 하나의 질문에서 시작된다.</p>
           <div className={styles.heroActions}>
@@ -61,7 +62,7 @@ export function PublicHome() {
             <Link href="/app" className={styles.heroSecondary}>시연 공간 둘러보기</Link>
           </div>
           <p className={styles.heroCredit}>배경 사진은 분위기를 위한 이미지이며, 물음의 운영 시설이 아닙니다. Photo: Kyle Ryan / Unsplash</p>
-        </div></div></section>
+        </div><CloudBank /></div></section>
 
         <section id="why" className={styles.section}><div className={`${styles.container} ${styles.sectionInner}`}>
           <SectionLabel number="01" label="WHY MULEUM" />
@@ -122,7 +123,7 @@ export function PublicHome() {
         </div></section>
 
         <section id="beta" className={`${styles.section} ${styles.paper} ${styles.beta}`}><div className={`${styles.container} ${styles.betaInner}`}>
-          <p className={styles.betaEyebrow}>A SMALL, TRUSTED BEGINNING</p>
+          <p className={styles.betaEyebrow}><Sparkle />A SMALL, TRUSTED BEGINNING</p>
           <h2 className={styles.sectionTitle}>작게 시작하고,<br />신뢰를 쌓으며 함께 자라요.</h2>
           <p className={styles.betaText}>물음은 초대 기반 비공개 운영을 준비 중이에요. 지금은 가상 데이터로 구성한 시연 공간을 살펴볼 수 있어요.</p>
           <p className={styles.betaInvite}>초대를 받으셨나요? 받은 링크를 열고 초대받은 구글 계정으로 시작하면 돼요. 별도의 회원가입은 없어요.</p>

@@ -18,3 +18,21 @@ test("home v2 palette is exact and Tailwind aliases share CSS tokens",()=>{
  assert.match(css,/@theme inline/);assert.match(css,/--color-brand-action: var\(--brand-action\)/);
  assert.doesNotMatch(readFileSync(new URL("../app/globals.css",import.meta.url),"utf8"),/#[0-9a-f]{3,8}\b/i);
 });
+function luminanceRgb(rgb:number[]){return rgb.map(c=>c/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4).reduce((sum,c,i)=>sum+c*[.2126,.7152,.0722][i],0);}
+const rgbOf=(hex:string)=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+test("day sky tokens keep text contrast and the home stylesheet holds no colour values",()=>{
+ for(const fg of ["text-strong","text-primary","text-secondary"])for(const bg of ["sky-top","cloud-shade"])assert.ok(contrast(tokens[fg],tokens[bg])>=4.5,`${fg}/${bg}: ${contrast(tokens[fg],tokens[bg])}`);
+ assert.ok(contrast(tokens["accent-ink"],tokens["sky-top"])>=3,"large accent title on sky");
+ const home=readFileSync(new URL("../components/public-home.module.css",import.meta.url),"utf8");
+ assert.doesNotMatch(home,/#[0-9a-f]{3,8}\b/i);assert.doesNotMatch(home,/\brgba?\(|\bhsla?\(/i);
+});
+test("hero text passes even if the photo under the sky overlay is pure black",()=>{
+ const home=readFileSync(new URL("../components/public-home.module.css",import.meta.url),"utf8");
+ const scrim=Number(home.match(/--hero-scrim:\s*(\d+)%/)?.[1])/100;
+ assert.ok(scrim>0&&scrim<=1,"hero scrim strength is declared");
+ // Overlay colour at `scrim` opacity composited over black is the darkest possible backdrop for dark text.
+ const backdrop=luminanceRgb(rgbOf(tokens["sky-top"]).map(c=>c*scrim));
+ const ratio=(fg:string)=>(backdrop+.05)/(luminanceRgb(rgbOf(tokens[fg]))+.05);
+ for(const fg of ["text-strong","text-primary"])assert.ok(ratio(fg)>=4.5,`${fg} over worst-case hero: ${ratio(fg)}`);
+ assert.ok(ratio("accent-ink")>=3,`large accent title over worst-case hero: ${ratio("accent-ink")}`);
+});

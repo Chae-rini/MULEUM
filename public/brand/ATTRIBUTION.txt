@@ -1,6 +1,10 @@
 MULEUM visual assets
 Verified: 2026-10-23
 
+muleum-icon-sky.png (current official icon, 2026-10-24)
+Source: original image supplied by the project owner.
+Copied unchanged. muleum-icon-sky-*.png are resized or square-cropped derivatives; no new artwork was drawn.
+
 muleum-icon.png
 Source: original image supplied by the project owner.
 Copied unchanged. No transparency or alternate artwork was generated.
@@ -12,7 +16,7 @@ Source: https://unsplash.com/photos/wooden-bookcase-and-tables-inside-library-tW
 Image: https://images.unsplash.com/photo-1527908290749-8c9518e0db09?auto=format&fit=crop&fm=jpg&q=80&w=1800
 License: Unsplash License, https://unsplash.com/license
 Downloaded for local hosting; no visitor request goes to Unsplash automatically.
-Preserved former editorial reference image; no longer displayed in the current hero.
+Displayed in the current home hero with the photographer credit.
 This is not a MULEUM facility.
 
 Navigation icons

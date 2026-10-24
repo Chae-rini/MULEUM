@@ -2,7 +2,7 @@
 
 ## 구현된 범위
 
-PWA(Progressive Web App)는 웹사이트를 홈 화면에서 앱처럼 여는 방식입니다. `app/manifest.ts`에 설치 정보, `public/brand/pwa-*.png`에 제공받은 공식 파란 아이콘의 크기별 복사본을 준비했습니다. 그림을 새로 생성하거나 원본을 변경하지 않았습니다.
+PWA(Progressive Web App)는 웹사이트를 홈 화면에서 앱처럼 여는 방식입니다. `app/manifest.ts`에 설치 정보, `public/brand/muleum-icon-sky-*.png`에 공식 하늘 아이콘의 용도별 파일(any 192·512, maskable 512, apple-touch 180, 파비콘 32·16)을 준비했습니다. 만든 방법과 한계는 `docs/DESIGN_SYSTEM.md`의 '이미지' 절에 있습니다. 이전 `pwa-*.png`는 보존만 합니다.
 
 `public/sw.js` 서비스 워커(Service Worker)는 브라우저의 백그라운드 이벤트 처리 코드입니다. 회원 페이지·API·개인 기록을 캐시하지 않으며 오프라인 학습 기능은 제공하지 않습니다. 푸시 본문은 알려진 종류만 받아 고정 안내로 바꾸고, 클릭은 `/member`로 이동해 인증을 다시 거칩니다. 이름·질문 제목·본문·일기 내용을 표시하지 않습니다.
 

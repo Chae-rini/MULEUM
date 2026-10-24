@@ -99,3 +99,19 @@ test("existing private records stay out of other spaces and the public site", as
   await page.goto("/app/questions");
   await expect(page.getByRole("heading", { name: "PRIVATE_QUESTION_SENTINEL", exact: true })).toBeVisible();
 });
+
+test("sky decorations stay hidden from assistive technology and the cloud drift stops when motion is reduced", async ({ page }) => {
+  await page.goto("/");
+  for (const selector of [".sparkle", ".cloud-bank"]) {
+    expect(await page.locator(selector).evaluateAll(nodes => nodes.every(node => node.getAttribute("aria-hidden") === "true"))).toBe(true);
+  }
+  const drift = page.locator(".cloud-drift").first();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(drift).toHaveCSS("animation-name", "cloud-drift");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(drift).toHaveCSS("animation-name", "none");
+  await expect(drift).toHaveCSS("transform", "none");
+  await page.goto("/login");
+  await expect(page.locator(".auth-intro .cloud-island")).toHaveAttribute("aria-hidden", "true");
+  await fits(page);
+});
