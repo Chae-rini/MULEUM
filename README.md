@@ -28,12 +28,13 @@ npm run dev -- --hostname 127.0.0.1 --port 3001
 - **회원 질문과 대화:** `/member/questions`에서 인증된 학생의 질문 → 담당 교사 답변 → 후속 질문 → 마무리를 DB에 저장하는 코드와 추가 SQL/RLS를 구현. 기본 비공개, 명시적 담당 교사 공유, 관계 철회·학생 간 격리 검사. 실제 Supabase는 미연결이며 가상 Auth와 로컬 PostgreSQL 통합 검사로 검증한다. 기존 `/app` 시연과 분리한다. [구현·검증·P0/P1/P2](docs/QUESTION_FLOW.md)
 
 - **공통 디자인:** Soft Blue Library. 하늘색·화이트·딥 네이비를 `app/theme.css`의 CSS 변수와 Tailwind 테마로 관리. 새 공식 아이콘을 로고·로그인·파비콘에 적용하고 사용자 제공 도서관 콘셉트 이미지를 홈페이지에 사용. 실제 운영 시설이 아님을 명시하며 이전 에셋은 보존.
+- **초대 링크 + Google 로그인 (2026-10-24):** 별도 회원가입 없음. 관리자가 `/member/invitations`에서 구글 이메일에 묶인 1회용 링크를 만들고, 초대받은 계정이 `/invite/[token]`에서 Google로 로그인한 뒤 `/welcome`에서 한 번 확인하면 가입된다. 만 15세 미만 불가, 만 19세 미만은 관리자가 보호자 동의를 기록할 때까지 대기. 실제 Supabase·Google 연결은 직접 설정해야 한다 — [설정 방법](docs/DEVELOPMENT_SETUP.md), [규칙](docs/ACCESS_CONTROL.md).
 - **로그인·마이페이지:** `/login`, `/member/[role]`, `/mypage`. 개발 서버에서 다섯 가상 계정 체험, 역할별 홈·메뉴, 로그아웃, 서버 접근 검사. Supabase 로그인 및 본인 프로필 조회·수정 코드는 준비했고 가상 Auth/REST 서버로 검증했으나 실제 Supabase는 미연결. 실제 초대·회원가입은 닫혀 있음.
-- **프로필·계정 시연:** `/app/profile`, `/app/register`, `/app/accounts`. 선택 성별, 직접 표현, 복수 역할, 연령/재학 분리, 보호자 관계 승인·철회, 주 담당 배정, 졸업·활동 중지, 감사 기록. 실제 인증·초대는 미연결.
+- **프로필·계정 시연:** `/app/profile`, `/app/accounts`. 선택 성별, 직접 표현, 복수 역할, 연령/재학 분리, 보호자 관계 승인·철회, 주 담당 배정, 졸업·활동 중지, 감사 기록. 실제 인증·초대는 미연결.
 - **공식 영상 자료실:** `/app/videos`. 제작자 초안·검토 요청, 관리자 공개 상태 수동 확인·승인, 학생 배정, Studio 초대·회수 확인. 요청한 공개 범위와 YouTube 확인 상태를 별도 관리. 실제 채널·API·영상 재생은 미연결.
 - **SQL 기반 보안 준비:** 회원·관계·비공개 기록·영상 테이블, RLS, 관리자 전용 DB 함수, 정원 제한. 격리된 PostgreSQL에서 실행 검사했으며 웹앱/운영 DB에는 연결하지 않음.
 - **공개 홈페이지 `/`:** 교육철학, 조정 가능한 120분 수업 기본형, 구성원의 관계, 공동체 비전, 비공개 베타 준비 안내. 회원 기록을 불러오지 않음.
-- **학습 기능 시연 `/app`:** 각 화면의 독립 주소, 새로고침·뒤로가기·앞으로가기, 역할 미리보기. 공지 예시 필터, 사람 중심 질문게시판 예시, 교수법 연구·운영 공간의 골격. 실제 회원 데이터와 분리. 졸업생은 프로필만 안내하며 내부 모임·졸업생 게시판·라운지 메뉴는 없음.
+- **학습 기능 시연 `/app`:** 각 화면의 독립 주소, 새로고침·뒤로가기·앞으로가기, 역할 미리보기. 2026-10-24 기능 없는 미리보기 화면(공지사항·질문게시판·교육팀 연구·운영 공간·초대 등록·졸업생 안내)은 삭제했고, 실제 기능은 `/member`에 새로 만든다. 실제 회원 데이터와 분리. 졸업생은 프로필만 안내하며 내부 모임·졸업생 게시판·라운지 메뉴는 없음.
 - **오늘의 물음:** 최근 질문, 이번 주 목표 요약, 일기와 질문 작성으로 이동.
 - **나의 물음:** 최대 300자 질문과 선택적인 이유를 작성하고 목록에서 확인. 공백 입력을 거부하고 HTML 같은 문자열도 실행하지 않고 글자로 표시.
 - **5분 일기:** 하루 세 가지 성찰 질문 중 하나 이상 작성, 날짜별 기록 조회, 기존 기록 수정. 하루 한 기록이며 교사·학부모 화면에 원문을 표시하지 않음.
@@ -86,7 +87,7 @@ components/
   icon.tsx            # Local Lucide SVG icons
   public-home.tsx     # Philosophy and public introduction
   member-shell.tsx    # Role preview and shared navigation
-  platform-previews.tsx # Planned community spaces
+  platform-previews.tsx # Role dashboard and role-mismatch notice
   community-provider.tsx # Memory-only fictional session state
   member-profile.tsx  # Profile editing and registration preview
   account-relations.tsx # Guardian/teacher approvals and account preview
@@ -118,14 +119,16 @@ supabase/
   seed.sql            # Local fictional fixtures only
 scripts/
   test-database.mjs   # Isolated PostgreSQL policy checks
-  test-auth-integration.mjs # Production app with fictional Auth/REST
+  test-auth-integration.mjs # Production app with fictional Google/Auth/REST
+  test-invitation-database.mjs # Invitation, onboarding and guardian consent SQL rules
+  test-invitation-integration.mjs # Invite link → Google → onboarding → consent, end to end
 docs/                 # Vision, philosophy, operations, architecture, access, roadmap
 artifacts/            # Screenshots by viewport size
 public/brand/         # Original brand icon, licensed photo, attribution
 public/icons/         # Vendored Lucide SVGs and license notices
 ```
 
-공개 홈페이지는 `/`, 로그인은 `/login`, 로그인 후 홈은 `/member/[role]`, 마이페이지는 `/mypage`입니다. 가상 체험은 개발 서버에서만 열립니다. `/app`의 기존 학습 시연 주소와 저장 키는 보존했습니다. 다만 `/app/community`는 마이페이지로 이동하며 커뮤니티 메뉴는 노출하지 않습니다. 미래 외부 라운지와 학습 기록은 기본적으로 분리하고 개인정보를 자동 전송하지 않습니다.
+공개 홈페이지는 `/`, 로그인은 `/login`, 로그인 후 홈은 `/member/[role]`, 마이페이지는 `/mypage`입니다. 가상 체험은 개발 서버에서만 열립니다. `/app`의 기존 학습 시연 주소와 저장 키는 보존했습니다. 삭제한 미리보기 주소(`/app/notices`, `/app/board`, `/app/register`, `/app/research`, `/app/community`, `/app/operations`)는 404를 보여 줍니다. 미래 외부 라운지와 학습 기록은 기본적으로 분리하고 개인정보를 자동 전송하지 않습니다.
 
 ## 테스트와 빌드
 

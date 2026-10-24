@@ -2,7 +2,7 @@
 // This adapter is test-only and is not a replacement for managed PostgREST.
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { chromium, expect } from '@playwright/test';
@@ -11,6 +11,8 @@ import { questionDatabase, asMember, fixtureId } from './question-test-support.m
 const modulePath=process.argv[2] ?? '/private/tmp/muleum-sql-check/node_modules/@electric-sql/pglite/dist/index.js';
 const db=await questionDatabase(modulePath);
 const sessions=new Map();
+const codes=new Map();
+let nextGoogleMember=null;
 let failNextWrite=false;
 const mock=createServer(async(req,res)=>{
  const json=(status,body)=>{res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(body));};
@@ -18,17 +20,25 @@ const mock=createServer(async(req,res)=>{
   const url=new URL(req.url,'http://localhost');
   const chunks=[];for await(const chunk of req)chunks.push(chunk);
   const body=chunks.length?JSON.parse(Buffer.concat(chunks).toString()):{};
+  // Stands in for Google consent: the browser returns at once with a one-time code tied to the PKCE challenge.
+  if(url.pathname==='/auth/v1/authorize'){
+   if(url.searchParams.get('provider')!=='google'||url.searchParams.get('code_challenge_method')!=='s256'){res.writeHead(400).end();return;}
+   const code=randomUUID();codes.set(code,{n:nextGoogleMember,challenge:url.searchParams.get('code_challenge')});
+   const target=new URL(url.searchParams.get('redirect_to'));target.searchParams.set('code',code);
+   res.writeHead(302,{Location:target.toString()}).end();return;
+  }
   if(req.headers.apikey!=='sb_publishable_question_fixture')return json(401,{});
   if(url.pathname==='/auth/v1/token'){
-   const n=Number(/^member(\d+)@example.invalid$/.exec(body.email)?.[1]);
-   if(![1,2,3,4,5,6,7,8,9].includes(n)||body.password!=='fictional-password')return json(401,{});
-   const token=randomUUID();sessions.set(token,n);return json(200,{access_token:token,expires_in:3600});
+   const entry=codes.get(body.auth_code);codes.delete(body.auth_code);
+   if(url.searchParams.get('grant_type')!=='pkce'||!entry||![1,2,3,4,5,6,7,8,9].includes(entry.n)||entry.challenge!==createHash('sha256').update(String(body.code_verifier??'')).digest('base64url'))return json(400,{});
+   const token=randomUUID();sessions.set(token,entry.n);return json(200,{access_token:token,expires_in:3600});
   }
   const token=req.headers.authorization?.replace(/^Bearer /,'');const n=sessions.get(token);
   if(!n)return json(401,{});
   if(url.pathname==='/auth/v1/user')return json(200,{id:fixtureId(n)});
   if(url.pathname==='/auth/v1/logout'){sessions.delete(token);return json(200,{});}
   const endpoint=url.pathname.replace('/rest/v1/','');
+  if(endpoint==='rpc/my_onboarding_status')return json(200,(await asMember(db,n,tx=>tx.query('select public.my_onboarding_status() value'))).rows[0].value);
   if(endpoint.startsWith('rpc/')){
    if(req.method!=='POST')return json(405,{});
    if(failNextWrite){failNextWrite=false;return json(503,{});}
@@ -57,12 +67,12 @@ try {
  const base='http://127.0.0.1:3108';
  app=spawn(process.execPath,[`${process.cwd()}/node_modules/next/dist/bin/next`,'start','--hostname','127.0.0.1','--port','3108'],{
   cwd:process.env.MULEUM_TEST_APP_DIR??process.cwd(),stdio:['ignore','pipe','pipe'],
-  env:{...process.env,NODE_ENV:'production',MULEUM_ENABLE_AUTH:'true',SUPABASE_URL:`http://127.0.0.1:${mock.address().port}`,SUPABASE_PUBLISHABLE_KEY:'sb_publishable_question_fixture'},
+  env:{...process.env,NODE_ENV:'production',MULEUM_ENABLE_AUTH:'true',MULEUM_SITE_URL:base,SUPABASE_URL:`http://127.0.0.1:${mock.address().port}`,SUPABASE_PUBLISHABLE_KEY:'sb_publishable_question_fixture'},
  });
  let output='';app.stdout.on('data',c=>output+=c);app.stderr.on('data',c=>output+=c);
  for(let i=0;i<100;i++){if(app.exitCode!==null)throw new Error(output);if(output.includes('Ready in'))break;if(i===99)throw new Error('App startup timeout');await new Promise(r=>setTimeout(r,200));}
  browser=await chromium.launch({channel:'chrome',headless:true});
- async function login(page,n){await page.goto(base+'/login');await page.getByLabel('이메일',{exact:true}).fill(`member${n}@example.invalid`);await page.getByLabel('비밀번호',{exact:true}).fill('fictional-password');await page.getByRole('button',{name:'로그인',exact:true}).click();await expect(page).toHaveURL(/\/member\/(student|teacher|parent|administrator|alumni|teaching_assistant|community_operator)$/);}
+ async function login(page,n){nextGoogleMember=n;await page.goto(base+'/login');await page.getByRole('link',{name:'Google로 계속하기',exact:true}).click();await expect(page).toHaveURL(/\/member\/(student|teacher|parent|administrator|alumni|teaching_assistant|community_operator)$/);}
  async function fit(page){assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);}
  for(const [name,viewport] of [['desktop',{width:1440,height:1000}],['mobile',{width:390,height:844}]]){
   const sc=await browser.newContext({viewport}),tc=await browser.newContext({viewport});

@@ -8,6 +8,8 @@ import type { Identity } from "./policy";
 
 export const authCookie = "muleum-auth";
 export const demoCookie = "muleum-demo-session";
+export const pkceCookie = "muleum-pkce";
+export const inviteCookie = "muleum-invite";
 const processState = globalThis as typeof globalThis & { muleumDemoSecret?: string };
 function demoSecret() {
   return processState.muleumDemoSecret ??= randomBytes(32).toString("hex");
@@ -25,6 +27,12 @@ export async function currentIdentity(): Promise<Identity | null> {
   }
   if (!demoEnabled(process.env)) return null;
   return readDemoSession(jar.get(demoCookie)?.value ?? "", demoSecret());
+}
+// A signed-in Supabase session that may not be an active member yet (first-login onboarding).
+export async function currentSession() {
+  const config = authConfig(process.env);
+  const token = (await cookies()).get(authCookie)?.value;
+  return config && token ? { config, token } : null;
 }
 export async function requireIdentity() {
   const identity = await currentIdentity();

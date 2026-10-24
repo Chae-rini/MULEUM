@@ -26,11 +26,42 @@ test("protected routes redirect anonymous visitors and real login is closed with
     await page.goto(path);
     await expect(page).toHaveURL(/\/login$/);
   }
-  await expect(page.getByLabel("이메일", { exact: true })).toBeDisabled();
-  await expect(page.getByLabel("비밀번호", { exact: true })).toBeDisabled();
-  await expect(page.getByRole("button", { name: "로그인", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Google로 계속하기", exact: true })).toBeDisabled();
+  await expect(page.getByLabel("비밀번호")).toHaveCount(0);
   await accessiblePage(page);
   await page.screenshot({ path: `artifacts/${info.project.name}-login.png`, fullPage: true });
+});
+
+test("invite links, Google sign-in and onboarding stay closed until Supabase and Google are configured", async ({ page }) => {
+  await page.goto(`/invite/${"a".repeat(43)}`);
+  await expect(page.getByRole("heading", { level: 1, name: "물음에 초대받았어요" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Google로 계속하기", exact: true })).toBeDisabled();
+  await accessiblePage(page);
+  await page.goto("/invite/not-a-token");
+  await expect(page.getByRole("main").getByRole("alert")).toContainText("올바르지 않은 초대 링크");
+  await page.goto("/welcome");
+  await expect(page).toHaveURL(/\/login$/);
+  await page.goto("/auth/google");
+  await expect(page).toHaveURL(/\/login\?error=unavailable$/);
+  await expect(page.getByRole("main").getByRole("alert")).toContainText("실제 로그인이 아직 설정되지 않았어요");
+  await page.goto("/auth/callback?code=forged");
+  await expect(page).toHaveURL(/\/login\?error=state$/);
+});
+
+test("demo administrators see invitation tools only as a closed placeholder", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByRole("button", { name: "관리자 체험 시작", exact: true }).click();
+  await expect(page).toHaveURL(/\/member\/administrator$/);
+  await page.goto("/member/invitations");
+  await expect(page.getByRole("heading", { level: 1, name: "초대와 보호자 동의" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "실제 회원 공간에 연결할 수 없어요." })).toBeVisible();
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+  await accessiblePage(page);
+  await page.getByRole("button", { name: "로그아웃", exact: true }).click();
+  await page.getByRole("button", { name: "학생 체험 시작", exact: true }).click();
+  await expect(page).toHaveURL(/\/member\/student$/);
+  await page.goto("/member/invitations");
+  await expect(page.getByRole("heading", { name: "이 공간에 접근할 권한이 없어요." })).toBeVisible();
 });
 
 test("five demo accounts have separate server-checked homes and a working my page", async ({ page, context }, info) => {
@@ -59,7 +90,8 @@ test("five demo accounts have separate server-checked homes and a working my pag
     await expect(page.getByText(`가상 ${labels[index]}`, { exact: true })).toBeVisible();
     if (roles[index] === "alumni") {
       await page.goto("/app/community");
-      await expect(page).toHaveURL(/\/mypage$/);
+      await expect(page.getByRole("heading", { name: "이 페이지를 찾을 수 없어요." })).toBeVisible();
+      await page.goto("/mypage");
     }
     await page.reload();
     await expect(page.getByText(`가상 ${labels[index]}`, { exact: true })).toBeVisible();

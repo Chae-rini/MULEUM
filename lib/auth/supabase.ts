@@ -26,14 +26,39 @@ async function request(config: AuthConfig, path: string, token: string | null, i
   return response;
 }
 
-export async function passwordLogin(config: AuthConfig, email: string, password: string, transport: Transport = fetch) {
-  const response = await request(config, "/auth/v1/token?grant_type=password", null,
-    { method: "POST", body: JSON.stringify({ email, password }) }, transport);
+// PKCE code exchange after the Google redirect; the auth code is single-use and valid for 5 minutes.
+export async function pkceExchange(config: AuthConfig, code: string, verifier: string, transport: Transport = fetch) {
+  const response = await request(config, "/auth/v1/token?grant_type=pkce", null,
+    { method: "POST", body: JSON.stringify({ auth_code: code, code_verifier: verifier }) }, transport);
   const result = await response.json();
   if (typeof result.access_token !== "string" || result.access_token.length > 3800 ||
       !Number.isFinite(result.expires_in) || result.expires_in <= 0) throw new AuthUnavailable("Invalid session");
   // Refresh tokens are deliberately not persisted in this initial development flow.
   return { token: result.access_token as string, maxAge: Math.min(Math.floor(result.expires_in), 3600) };
+}
+export class RpcError extends Error {
+  readonly code: string | null;
+  constructor(code: string | null) { super("Database request failed"); this.code = code; }
+}
+export async function rpc<T>(config: AuthConfig, token: string, name: string, args: object, transport: Transport = fetch): Promise<T> {
+  if (!/^[a-z_]+$/.test(name)) throw new RpcError(null);
+  const response = await transport(`${config.url}/rest/v1/rpc/${name}`, {
+    method: "POST", cache: "no-store", redirect: "error", signal: AbortSignal.timeout(8000), body: JSON.stringify(args),
+    headers: { apikey: config.key, Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+  });
+  if (!response.ok) {
+    let code: string | null = null;
+    try { const body = await response.json(); if (typeof body?.code === "string" && /^[A-Z0-9]{5}$/.test(body.code)) code = body.code; } catch { /* body is optional */ }
+    throw new RpcError(code);
+  }
+  if (response.status === 204) return undefined as T;
+  return await response.json() as T;
+}
+export type OnboardingStatus = "not_member" | "active" | "suspended" | "needs_profile" | "waiting_guardian" | "pending";
+export async function onboardingStatus(config: AuthConfig, token: string, transport: Transport = fetch): Promise<OnboardingStatus> {
+  const status = await rpc<unknown>(config, token, "my_onboarding_status", {}, transport);
+  if (!["not_member", "active", "suspended", "needs_profile", "waiting_guardian", "pending"].includes(String(status))) throw new RpcError(null);
+  return status as OnboardingStatus;
 }
 export async function resolveIdentity(config: AuthConfig, token: string, transport: Transport = fetch) {
   const user = await (await request(config, "/auth/v1/user", token, {}, transport)).json();

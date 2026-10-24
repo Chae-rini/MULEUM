@@ -59,15 +59,38 @@ SQL 스키마는 새 개발 DB 기준이며 기존 DB에 반복 적용하는 스
 
 ```dotenv
 MULEUM_ENABLE_AUTH=true
+MULEUM_SITE_URL=http://127.0.0.1:3000
 SUPABASE_URL=https://YOUR_DEVELOPMENT_PROJECT.supabase.co
 SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_DEVELOPMENT_KEY
 ```
 
+`MULEUM_SITE_URL`은 구글 로그인 후 돌아올 주소의 기준이다. 요청의 Host 헤더를 믿지 않기 위해 설정값만 쓴다. 배포 시 실제 사이트 주소(https)로 바꾼다.
+
+### 초대 링크 + Google 로그인 설정 (2026-10-24 결정, 외부 작업은 직접 진행)
+
+가입 양식은 없다. 관리자가 만든 1회용 초대 링크를 **초대받은 구글 계정**으로 열어 로그인하면 가입되고, 첫 로그인 때 이름·생년월일·시군구·개인정보 동의를 한 번 확인한다. 만 15세 미만은 가입할 수 없고, 만 19세 미만은 관리자가 보호자 동의를 기록할 때까지 "동의 대기"다.
+
+1. Google Cloud Console에서 OAuth 동의 화면과 "웹 애플리케이션" OAuth 클라이언트를 만든다. 승인된 리디렉션 URI에 `https://YOUR_DEVELOPMENT_PROJECT.supabase.co/auth/v1/callback`을 넣는다.
+2. Supabase → Authentication → Providers에서 Google을 켜고 클라이언트 ID·secret을 입력한다. Google secret은 Supabase에만 두고 이 레포·환경 파일에 넣지 않는다.
+3. Supabase → Authentication → URL Configuration의 Redirect URLs에 `MULEUM_SITE_URL/auth/callback`을 추가한다.
+4. Email 제공자는 끈다. 초대 수락 DB 함수는 Google 로그인(`app_metadata.provider = google`)과 토큰의 `email`이 초대 이메일과 같은지 확인한다. 실제 프로젝트에서 첫 로그인 후 이 두 클레임이 들어오는지 꼭 확인한다.
+5. 마이그레이션을 순서대로 적용한다: `202610230001` → `202610230002` → `202610230003` → `202610240001`.
+6. **첫 관리자 지정:** 초대는 관리자만 만들 수 있으므로 첫 관리자는 직접 지정한다. 본인 구글 계정으로 `/login`에서 한 번 로그인하면 "초대받지 않은 계정"으로 거절되지만 `auth.users`에 행이 생긴다. 그 ID로 SQL 편집기에서 실행한다.
+
+```sql
+-- 첫 관리자 1명만. 이후 회원은 모두 /member/invitations의 초대 링크로 가입한다.
+insert into public.member_accounts(user_id,status,enrollment) values('YOUR_AUTH_USER_ID','active','none');
+insert into public.member_profiles(user_id,full_name,birth_date,residence_region) values('YOUR_AUTH_USER_ID','이름','YYYY-MM-DD','시·군·구');
+insert into public.member_roles(user_id,role,status) values('YOUR_AUTH_USER_ID','administrator','approved');
+```
+
+로그인 흐름: `/auth/google`이 PKCE 검증값을 httpOnly 쿠키에 두고 Supabase `/auth/v1/authorize?provider=google`로 보낸다 → `/auth/callback`이 `POST /auth/v1/token?grant_type=pkce`로 세션을 받는다 → 초대 쿠키가 있으면 `accept_invitation` → `my_onboarding_status`에 따라 `/welcome` 또는 역할 홈으로 보낸다. 회원이 아닌 구글 계정의 세션은 즉시 폐기한다. 초대 토큰 원문은 DB에 저장하지 않고 SHA-256 값만 저장한다.
+
 공개 가능한 publishable key만 받는다. `sb_secret_`, service role, legacy JWT 키는 이 구현에서 허용하지 않는다. 설정 누락·오류 시 실제 로그인은 닫힌다. 명시적으로 활성화한 환경에서 설정이 잘못되어도 가상 인증으로 우회하지 않는다.
 
-Supabase의 공개 가입을 비활성화하고, **가상 개발 계정만** Auth에 준비한다. 기존 SQL 스키마의 `member_accounts.status = active`와 본인 `member_roles.status = approved`가 있어야 앱에 들어온다. 초대 발송·수락·활성화·정원 승인 절차는 이번 로그인 코드가 대신하지 않는다. 기존 seed의 auth.users 최소 행은 실제 비밀번호 로그인 계정이 아니다.
+`member_accounts.status = active`와 본인 `member_roles.status = approved`가 있어야 앱에 들어온다. 이 상태는 초대 수락 → 첫 로그인 확인(→ 미성년자는 보호자 동의 기록)을 거쳐서만 만들어진다. 기존 seed의 auth.users 최소 행은 실제 로그인 계정이 아니다.
 
-서버는 공식 Auth HTTP API의 password grant → `/user` 검증 → 본인 계정·역할 REST 조회를 수행한다. 사용자 토큰으로 요청하므로 DB의 RLS가 적용된다. 사용자 메타데이터, 폼의 user_id·role은 권한 근거로 쓰지 않는다. 마이페이지는 본인의 성명·생년월일·시군구만 조회하며 성명·지역만 수정한다. 성별 정보를 조회·전송하지 않는다. 비밀번호와 인증 토큰을 HTML·Local Storage에 저장하지 않는다.
+서버는 Google PKCE 교환 → `/user` 검증 → 본인 계정·역할 REST 조회를 수행한다. 이메일·비밀번호 로그인 코드는 2026-10-24 삭제했다. 사용자 토큰으로 요청하므로 DB의 RLS가 적용된다. 사용자 메타데이터, 폼의 user_id·role은 권한 근거로 쓰지 않는다. 마이페이지는 본인의 성명·생년월일·시군구만 조회하며 성명·지역만 수정한다. 성별 정보를 조회·전송하지 않는다. 비밀번호와 인증 토큰을 HTML·Local Storage에 저장하지 않는다.
 
 실제 세션 쿠키는 프로덕션에서 Secure다. 자동 갱신은 아직 구현하지 않아 최대 1시간 또는 토큰 만료 시 다시 로그인한다. 로그아웃은 Supabase 현재 세션 종료를 요청하고 로컬 쿠키를 지운다. 원격 종료 실패 시 이를 화면에 알린다. JWT의 만료 전 유효성 특성까지 완전한 즉시 폐기라고 표현하지 않는다.
 

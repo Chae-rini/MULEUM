@@ -3,38 +3,12 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { authCookie, demoCookie, cookieOptions, createDemoSession, requireIdentity } from "@/lib/auth/server";
-import { authConfig, demoEnabled, passwordLogin, resolveIdentity, revokeSession, updateOwnProfile } from "@/lib/auth/supabase";
-import { demoRoles, memberHome } from "@/lib/auth/policy";
+import { authConfig, demoEnabled, revokeSession, updateOwnProfile } from "@/lib/auth/supabase";
+import { demoRoles } from "@/lib/auth/policy";
 import { revalidatePath } from "next/cache";
 import { revokeAllSubscriptions } from "@/lib/notifications/server";
 
 export interface ActionState { error?: string; success?: string }
-
-export async function login(_previous: ActionState, form: FormData): Promise<ActionState> {
-  const config = authConfig(process.env);
-  if (!config) return { error: "실제 로그인이 아직 설정되지 않았어요. 아래 가상 계정 체험을 이용해 주세요." };
-  const email = String(form.get("email") ?? "").trim();
-  const password = String(form.get("password") ?? "");
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || !password || password.length > 1024) {
-    return { error: "이메일과 비밀번호를 확인해 주세요." };
-  }
-  let destination: string;
-  try {
-    const session = await passwordLogin(config, email, password);
-    const identity = await resolveIdentity(config, session.token);
-    if (!identity) {
-      await revokeSession(config, session.token).catch(() => undefined);
-      return { error: "로그인할 수 없어요. 입력 정보 또는 초대·계정 승인 상태를 확인해 주세요." };
-    }
-    const jar = await cookies();
-    jar.delete(demoCookie);
-    jar.set(authCookie, session.token, { ...cookieOptions, maxAge: session.maxAge });
-    destination = memberHome(identity);
-  } catch {
-    return { error: "로그인할 수 없어요. 입력 정보 또는 연결 상태를 확인하고 잠시 후 다시 시도해 주세요." };
-  }
-  redirect(destination);
-}
 
 export async function demoLogin(form: FormData) {
   const role = String(form.get("role") ?? "");

@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { approvedIdentity, canOpenRole, isAccountRole, memberHome } from "../lib/auth/policy.ts";
 import { readDemoSession, signDemoSession } from "../lib/auth/demo-session.ts";
-import { authConfig, demoEnabled, passwordLogin, resolveIdentity, ownProfile, updateOwnProfile, revokeSession } from "../lib/auth/supabase.ts";
+import { authConfig, demoEnabled, pkceExchange, resolveIdentity, ownProfile, updateOwnProfile, revokeSession, rpc, RpcError, onboardingStatus } from "../lib/auth/supabase.ts";
 
 const id = "00000000-0000-4000-8000-000000000001";
 const config = { url: "https://example.invalid", key: "sb_publishable_test" };
@@ -74,15 +74,29 @@ test("Supabase errors and suspended membership fail closed", async () => {
   assert.equal(await resolveIdentity(config, "test-token", transport), null);
 });
 
-test("password login uses Auth password grant and excludes refresh tokens from its return", async () => {
-  const session = await passwordLogin(config, "fictional@example.invalid", "test-only-password", async (input, init) => {
-    assert.ok(String(input).endsWith("/auth/v1/token?grant_type=password"));
+test("Google PKCE exchange uses the pkce grant and excludes refresh tokens from its return", async () => {
+  const session = await pkceExchange(config, "fictional-code", "fictional-verifier", async (input, init) => {
+    assert.ok(String(input).endsWith("/auth/v1/token?grant_type=pkce"));
     assert.equal(init?.method, "POST");
-    assert.deepEqual(JSON.parse(String(init?.body)), { email: "fictional@example.invalid", password: "test-only-password" });
+    assert.deepEqual(JSON.parse(String(init?.body)), { auth_code: "fictional-code", code_verifier: "fictional-verifier" });
     return Response.json({ access_token: "access", refresh_token: "never-persist", expires_in: 7200 });
   });
   assert.deepEqual(session, { token: "access", maxAge: 3600 });
-  await assert.rejects(passwordLogin(config, "x", "x", async () => Response.json({ access_token: "x", expires_in: -1 })));
+  await assert.rejects(pkceExchange(config, "x", "x", async () => Response.json({ access_token: "x", expires_in: -1 })));
+  await assert.rejects(pkceExchange(config, "x", "x", async () => new Response(null, { status: 400 })));
+});
+
+test("database calls send the user token and surface only whitelisted error codes", async () => {
+  const result = await rpc<string>(config, "access", "accept_invitation", { p_token_hash: "a".repeat(64) }, async (input, init) => {
+    assert.equal(String(input), "https://example.invalid/rest/v1/rpc/accept_invitation");
+    assert.equal(new Headers(init?.headers).get("Authorization"), "Bearer access");
+    return Response.json("student");
+  });
+  assert.equal(result, "student");
+  await assert.rejects(rpc(config, "access", "accept_invitation", {}, async () => Response.json({ code: "MUL01", message: "fictional detail" }, { status: 400 })), (error: unknown) => error instanceof RpcError && error.code === "MUL01" && !error.message.includes("fictional detail"));
+  await assert.rejects(rpc(config, "access", "x;drop", {}, async () => Response.json(null)), (error: unknown) => error instanceof RpcError && error.code === null);
+  assert.equal(await onboardingStatus(config, "access", async () => Response.json("waiting_guardian")), "waiting_guardian");
+  await assert.rejects(onboardingStatus(config, "access", async () => Response.json("superuser")));
 });
 
 test("own profile responses expose only selected fields and updates use a fixed allowlist", async () => {

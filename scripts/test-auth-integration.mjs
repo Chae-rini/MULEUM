@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
+import { createHash, randomUUID } from "node:crypto";
 import { chromium, expect } from "@playwright/test";
 
 const studentId = "00000000-0000-4000-8000-000000000001";
@@ -11,8 +12,11 @@ const parentId = "00000000-0000-4000-8000-000000000002";
 const records = {
   student: { id: studentId, status: "active", roles: ["student", "parent"], name: "Fictional Student", region: "Example District", token: "fictional-student-token" },
   parent: { id: parentId, status: "active", roles: ["parent"], name: "Fictional Parent", region: "Example District", token: "fictional-parent-token" },
+  outsider: { id: "00000000-0000-4000-8000-000000000099", status: "none", roles: [], name: "", region: "", token: "fictional-outsider-token" },
 };
 const revoked = new Set();
+const codes = new Map();
+let nextGoogleUser = null;
 let lastPatch = null;
 let remoteLogoutFails = false;
 const mock = createServer(async (req, res) => {
@@ -22,12 +26,23 @@ const mock = createServer(async (req, res) => {
   let body;
   try { body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString()) : {}; } catch { res.writeHead(400).end(); return; }
   function json(status, value) { res.writeHead(status, { "Content-Type": "application/json" }); res.end(JSON.stringify(value)); }
+  // Stands in for Google consent: the browser returns at once with a one-time code tied to the PKCE challenge.
+  if (url.pathname === "/auth/v1/authorize") {
+    if (url.searchParams.get("provider") !== "google" || url.searchParams.get("code_challenge_method") !== "s256") { res.writeHead(400).end(); return; }
+    const code = randomUUID();
+    codes.set(code, { who: nextGoogleUser, challenge: url.searchParams.get("code_challenge") });
+    const target = new URL(url.searchParams.get("redirect_to"));
+    target.searchParams.set("code", code);
+    res.writeHead(302, { Location: target.toString() }).end(); return;
+  }
   if (req.headers.apikey !== "sb_publishable_fictional_test") return json(401, {});
   if (url.pathname === "/auth/v1/token" && req.method === "POST") {
-    const who = Object.values(records).find(record => body.email === `${record === records.student ? "student" : "parent"}@example.invalid`);
-    if (!who || body.password !== "fictional-password") return json(400, { message: "Invalid credentials" });
-    revoked.delete(who.token);
-    return json(200, { access_token: who.token, refresh_token: "fictional-unused-refresh", expires_in: 3600 });
+    const entry = codes.get(body.auth_code);
+    codes.delete(body.auth_code);
+    const challenge = createHash("sha256").update(String(body.code_verifier ?? "")).digest("base64url");
+    if (url.searchParams.get("grant_type") !== "pkce" || !entry?.who || entry.challenge !== challenge) return json(400, { message: "Invalid grant" });
+    revoked.delete(entry.who.token);
+    return json(200, { access_token: entry.who.token, refresh_token: "fictional-unused-refresh", expires_in: 3600 });
   }
   const token = req.headers.authorization?.replace(/^Bearer /, "");
   const who = Object.values(records).find(record => record.token === token);
@@ -37,6 +52,7 @@ const mock = createServer(async (req, res) => {
     if (remoteLogoutFails) return json(503, {});
     revoked.add(token); return json(200, {});
   }
+  if (url.pathname === "/rest/v1/rpc/my_onboarding_status") return json(200, who.status === "active" ? "active" : who.status === "suspended" ? "suspended" : "not_member");
   if (url.searchParams.get("user_id") !== `eq.${who.id}`) return json(403, {});
   if (url.pathname === "/rest/v1/member_accounts") return json(200, [{ user_id: who.id, status: who.status, enrollment: who === records.student ? "active" : "none" }]);
   if (url.pathname === "/rest/v1/member_roles") return json(200, who.roles.map(role => ({ user_id: who.id, role, status: "approved" })));
@@ -61,7 +77,7 @@ try {
   const port = 3107;
   app = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "--hostname", "127.0.0.1", "--port", String(port)], {
     cwd: process.cwd(), stdio: ["ignore", "pipe", "pipe"],
-    env: { ...process.env, NODE_ENV: "production", MULEUM_ENABLE_AUTH: "true", SUPABASE_URL: `http://127.0.0.1:${mock.address().port}`, SUPABASE_PUBLISHABLE_KEY: "sb_publishable_fictional_test" },
+    env: { ...process.env, NODE_ENV: "production", MULEUM_ENABLE_AUTH: "true", MULEUM_SITE_URL: `http://127.0.0.1:${port}`, SUPABASE_URL: `http://127.0.0.1:${mock.address().port}`, SUPABASE_PUBLISHABLE_KEY: "sb_publishable_fictional_test" },
   });
   let output = "";
   app.stdout.on("data", chunk => { output += chunk; });
@@ -77,18 +93,27 @@ try {
   const context = await browser.newContext();
   const page = await context.newPage();
   async function loginAs(name) {
+    nextGoogleUser = records[name];
     await page.goto(`${base}/login`);
-    await page.getByLabel("이메일", { exact: true }).fill(`${name}@example.invalid`);
-    await page.getByLabel("비밀번호", { exact: true }).fill("fictional-password");
-    await page.getByRole("button", { name: "로그인", exact: true }).click();
+    await page.getByRole("link", { name: "Google로 계속하기", exact: true }).click();
   }
-  await check("production has no demo login and invalid credentials cannot authenticate", async () => {
+  await check("production has no demo login and an uninvited Google account gets no session", async () => {
     await page.goto(`${base}/login`);
     await expect(page.getByRole("button", { name: "학생 체험 시작" })).toHaveCount(0);
-    await page.getByLabel("이메일", { exact: true }).fill("student@example.invalid");
-    await page.getByLabel("비밀번호", { exact: true }).fill("incorrect");
-    await page.getByRole("button", { name: "로그인", exact: true }).click();
-    await expect(page.getByRole("main").getByRole("alert")).toContainText("로그인할 수 없어요");
+    await loginAs("outsider");
+    await expect(page).toHaveURL(`${base}/login?error=not-invited`);
+    await expect(page.getByRole("main").getByRole("alert")).toContainText("초대받지 않은 구글 계정");
+    assert.equal((await context.cookies()).some(c => c.name === "muleum-auth"), false);
+    assert.ok(revoked.has(records.outsider.token));
+  });
+  await check("a forged code or missing PKCE verifier cannot complete sign-in", async () => {
+    codes.set("forged-code", { who: records.student, challenge: "not-the-real-challenge" });
+    await context.addCookies([{ name: "muleum-pkce", value: "a".repeat(86), url: base }]);
+    await page.goto(`${base}/auth/callback?code=forged-code`);
+    await expect(page).toHaveURL(`${base}/login?error=state`);
+    codes.set("orphan-code", { who: records.student, challenge: "x" });
+    await page.goto(`${base}/auth/callback?code=orphan-code`);
+    await expect(page).toHaveURL(`${base}/login?error=state`);
     assert.equal((await context.cookies()).some(c => c.name === "muleum-auth"), false);
   });
   await check("verified login supports multiple approved roles and secure server cookies", async () => {
@@ -127,7 +152,8 @@ try {
     await context.clearCookies();
     records.student.status = "suspended";
     await loginAs("student");
-    await expect(page.getByRole("main").getByRole("alert")).toContainText("초대·계정 승인");
+    await expect(page).toHaveURL(`${base}/login?error=suspended`);
+    await expect(page.getByRole("main").getByRole("alert")).toContainText("이용이 중지된 계정");
     assert.equal((await context.cookies()).some(c => c.name === "muleum-auth"), false);
     records.student.status = "active";
   });
