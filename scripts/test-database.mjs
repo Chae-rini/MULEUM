@@ -12,9 +12,12 @@ async function check(name,fn){await fn();checks++;console.log(`PASS ${name}`);}
 async function as(n,role='authenticated'){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[n?id(n):'']);await db.exec(`set role ${role}`);}
 async function rows(sql,args=[]){return (await db.query(sql,args)).rows;}
 async function denied(sql,args=[]){await assert.rejects(()=>db.query(sql,args));}
+// RLS violations share SQLSTATE 42501, so the message separates a missing privilege from a policy rejection.
+async function permissionDenied(sql,args=[]){await assert.rejects(()=>db.query(sql,args),e=>e.code==='42501'&&/permission denied/.test(e.message));}
 try {
  await db.exec("create role anon nologin; create role authenticated nologin; create schema auth; create table auth.users(id uuid primary key); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; grant usage on schema auth to anon,authenticated; grant execute on function auth.uid() to anon,authenticated;");
  await db.exec(await readFile(new URL('../supabase/migrations/202610230001_members_and_videos.sql',import.meta.url),'utf8'));
+ await db.exec(await readFile(new URL('../supabase/migrations/202610250001_profile_column_grants.sql',import.meta.url),'utf8'));
  await db.exec(await readFile(new URL('../supabase/seed.sql',import.meta.url),'utf8'));
  await check('migration enables RLS on every application table',async()=>{const r=await rows("select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' and not c.relrowsecurity");assert.deepEqual(r,[]);});
  await as(null,'anon');
@@ -23,8 +26,19 @@ try {
  await check('student reads only own profile and optional data',async()=>{assert.equal((await rows('select * from public.member_profiles')).length,1);assert.equal((await rows('select * from public.member_optional_profiles'))[0].gender_description,'PRIVATE_GENDER_SENTINEL');});
  await check('student cannot update another profile or self-elevate',async()=>{assert.equal((await db.query('update public.member_profiles set full_name=$1 where user_id=$2',['hacked',id(2)])).affectedRows,0);await denied("insert into public.member_roles(user_id,role,status) values($1,'administrator','approved')",[id(1)]);await denied("select public.manage_member('grant_role',$1,'administrator')",[id(1)]);});
  await check('gender can be omitted or explicitly refused; invalid free text fails',async()=>{await db.query('update public.member_optional_profiles set gender=null,gender_description=null');assert.equal((await rows('select gender from public.member_optional_profiles'))[0].gender,null);await db.query("update public.member_optional_profiles set gender='prefer_not_to_say'");assert.equal((await rows('select gender from public.member_optional_profiles'))[0].gender,'prefer_not_to_say');await denied("update public.member_optional_profiles set gender_description='not allowed'");});
- await check('future birth dates and owner changes fail',async()=>{await denied("update public.member_profiles set birth_date=current_date+1");await denied('update public.member_profiles set user_id=$1',[id(7)]);});
- await check('age category is computed from date, not role or gender',async()=>{assert.equal((await rows('select public.my_age_category() value'))[0].value,'minor');await db.query("update public.member_profiles set birth_date='2000-01-01'");assert.equal((await rows('select public.my_age_category() value'))[0].value,'adult');});
+ await check('active members cannot change their own birth date or owner',async()=>{await permissionDenied("update public.member_profiles set birth_date='2000-01-01' where user_id=$1",[id(1)]);await permissionDenied('update public.member_profiles set user_id=$1',[id(7)]);});
+ await check('active members can edit only their name and region, and updated_at still moves',async()=>{
+  const before=(await rows('select updated_at from public.member_profiles where user_id=$1',[id(1)]))[0].updated_at;
+  const result=await db.query("update public.member_profiles set full_name='Fictional renamed',residence_region='Fictional city' where user_id=$1 returning full_name,residence_region,updated_at",[id(1)]);
+  assert.equal(result.affectedRows,1);assert.equal(result.rows[0].full_name,'Fictional renamed');assert.equal(result.rows[0].residence_region,'Fictional city');assert.ok(result.rows[0].updated_at>before);
+ });
+ await check('the profile trigger still rejects future birth dates on the server path',async()=>{await db.exec('reset role');await denied("update public.member_profiles set birth_date=current_date+1 where user_id=$1",[id(1)]);await as(1);});
+ await check('age category is computed from date, not role or gender',async()=>{assert.equal((await rows('select public.my_age_category() value'))[0].value,'minor');await db.exec('reset role');await db.query("update public.member_profiles set birth_date='2000-01-01' where user_id=$1",[id(1)]);await as(1);assert.equal((await rows('select public.my_age_category() value'))[0].value,'adult');});
+ await check('active members cannot insert a profile directly',async()=>{
+  await db.exec('reset role');await db.query('insert into auth.users(id) values($1)',[id(9)]);await db.query("insert into public.member_accounts(user_id,status,enrollment) values($1,'active','none')",[id(9)]);
+  await as(9);await permissionDenied("insert into public.member_profiles(user_id,full_name,birth_date,residence_region) values($1,'Fictional self','2000-01-01','Fictional district')",[id(9)]);
+  await as(1);
+ });
  for(const n of [2,3,4,5,6,7,8]){await as(n);await check(`account ${n} cannot read student private records`,async()=>{assert.deepEqual(await rows('select * from public.private_journals'),[]);assert.deepEqual(await rows('select * from public.private_questions'),[]);assert.deepEqual(await rows('select * from public.member_optional_profiles'),[]);});}
  await as(4);
  await check('guardian gets approved summary only, no raw student profile',async()=>{assert.equal((await rows('select * from public.shared_learning_items')).length,1);const minimal=await rows('select * from public.related_student_summaries()');assert.equal(minimal.length,1);assert.deepEqual(Object.keys(minimal[0]).sort(),['full_name','student_id']);assert.equal((await rows('select * from public.member_profiles'))[0].user_id,id(4));});

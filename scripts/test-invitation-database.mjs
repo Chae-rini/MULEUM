@@ -26,7 +26,7 @@ const accept=token=>value('select public.accept_invitation($1) value',[hash(toke
 const onboard=(name,ageYears,consent=true)=>value("select public.complete_onboarding($1,((now() at time zone 'Asia/Seoul')::date - make_interval(years=>$2))::date,'Fictional district',$3) value",[name,ageYears,consent]);
 try {
  await db.exec("create role anon nologin; create role authenticated nologin; create schema auth; create table auth.users(id uuid primary key); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb $$; grant usage on schema auth to anon,authenticated; grant execute on function auth.uid(), auth.jwt() to anon,authenticated;");
- for(const file of ['supabase/migrations/202610230001_members_and_videos.sql','supabase/seed.sql','supabase/migrations/202610230002_question_threads.sql','supabase/migrations/202610230003_notifications.sql','supabase/migrations/202610240001_invitations_onboarding.sql'])await db.exec(await readFile(new URL(`../${file}`,import.meta.url),'utf8'));
+ for(const file of ['supabase/migrations/202610230001_members_and_videos.sql','supabase/seed.sql','supabase/migrations/202610230002_question_threads.sql','supabase/migrations/202610230003_notifications.sql','supabase/migrations/202610240001_invitations_onboarding.sql','supabase/migrations/202610250001_profile_column_grants.sql'])await db.exec(await readFile(new URL(`../${file}`,import.meta.url),'utf8'));
  await db.query('insert into auth.users select unnest($1::uuid[])',[[20,21,22,23,24,25].map(id)]);
 
  await as(null,{},'anon');
@@ -109,6 +109,12 @@ try {
   assert.equal((await rows("select teacher_id from public.teacher_assignments where status='approved'"))[0].teacher_id,id(3));
  });
  await check('consent cannot be confirmed twice',async()=>{await as(5,{email:'member5@example.invalid'});await fails('select public.confirm_guardian_consent($1,$2)',[id(20),'again'],'MUL02');});
+ await check('an activated minor cannot rewrite their birth date to pass as an adult',async()=>{
+  await as(20,{email:'minor.student@example.invalid'});
+  await fails("update public.member_profiles set birth_date='2000-01-01' where user_id=$1",[id(20)],'42501');
+  assert.equal(await value('select public.my_age_category() value'),'minor');
+  assert.equal((await db.query("update public.member_profiles set full_name='Minor Renamed',residence_region='Fictional city' where user_id=$1",[id(20)])).affectedRows,1);
+ });
 
  await check('an adult is active right after onboarding without guardian consent',async()=>{
   await as(23,{email:'adult.parent@example.invalid'});

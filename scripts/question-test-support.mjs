@@ -6,7 +6,7 @@ export async function questionDatabase(modulePath, dataDir) {
   const { PGlite } = await import(pathToFileURL(modulePath).href);
   const db = await PGlite.create(dataDir);
   await db.exec("create role anon nologin; create role authenticated nologin; create schema auth; create table auth.users(id uuid primary key); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb $$; grant usage on schema auth to anon,authenticated; grant execute on function auth.uid(), auth.jwt() to anon,authenticated;");
-  for (const file of ['supabase/migrations/202610230001_members_and_videos.sql','supabase/seed.sql','supabase/migrations/202610230002_question_threads.sql','supabase/migrations/202610240001_invitations_onboarding.sql']) {
+  for (const file of ['supabase/migrations/202610230001_members_and_videos.sql','supabase/seed.sql','supabase/migrations/202610230002_question_threads.sql','supabase/migrations/202610240001_invitations_onboarding.sql','supabase/migrations/202610250001_profile_column_grants.sql']) {
     await db.exec(await readFile(new URL(`../${file}`,import.meta.url),'utf8'));
   }
   await db.query('insert into auth.users values($1)',[fixtureId(9)]);

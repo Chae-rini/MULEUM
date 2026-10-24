@@ -63,7 +63,7 @@ supabase stop                           # 쓰지 않을 때. 데이터는 유지
   - 이메일 가입은 끄고 새 사용자 가입은 켠다.
   - 돌아올 주소는 `http://127.0.0.1:3000/auth/callback`이다.
   - 앱이 쓰지 않는 realtime·storage·edge functions·analytics·메일 테스트 서버는 끈다.
-- `supabase start`가 `supabase/migrations`를 순서대로 적용한다. 2026-10-24 Postgres 17(supabase/postgres 17.11)에서 4개 모두 오류 없이 적용됐다. 확인한 내용은 다음과 같다.
+- `supabase start`가 `supabase/migrations`를 순서대로 적용한다. 2026-10-24 Postgres 17(supabase/postgres 17.11)에서 당시 4개 모두 오류 없이 적용됐다. 이미 켜 둔 로컬 DB에 나중에 추가된 마이그레이션은 `supabase migration up`으로 적용한다(`202610250001`은 아직 로컬 DB에 적용하지 않았다). 확인한 내용은 다음과 같다.
   - public 테이블 23개 모두 RLS가 켜져 있다.
   - 익명 요청은 테이블 조회와 RPC 모두 401(42501)로 막힌다.
   - 첫 관리자 SQL을 트랜잭션 안에서 리허설하고 롤백했다. 지정 후 `my_onboarding_status() = active`였고 학부모 초대 생성도 성공했다.
@@ -100,7 +100,7 @@ SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_DEVELOPMENT_KEY
 2. Supabase → Authentication → Providers에서 Google을 켜고 클라이언트 ID·secret을 입력한다. Google secret은 Supabase에만 두고 이 레포·환경 파일에 넣지 않는다.
 3. Supabase → Authentication → URL Configuration의 Redirect URLs에 `MULEUM_SITE_URL/auth/callback`을 추가한다.
 4. Email 제공자는 끈다. 초대 수락 DB 함수는 Google 로그인(`app_metadata.provider = google`)과 토큰의 `email`이 초대 이메일과 같은지 확인한다. 실제 프로젝트에서 첫 로그인 후 이 두 클레임이 들어오는지 꼭 확인한다.
-5. 마이그레이션을 순서대로 적용한다: `202610230001` → `202610230002` → `202610230003` → `202610240001`.
+5. 마이그레이션을 순서대로 적용한다: `202610230001` → `202610230002` → `202610230003` → `202610240001` → `202610250001`(프로필 열 단위 권한).
 6. **첫 관리자 지정:** 초대는 관리자만 만들 수 있으므로 첫 관리자는 직접 지정한다. 본인 구글 계정으로 `/login`에서 한 번 로그인하면 "초대받지 않은 계정"으로 거절되지만 `auth.users`에 행이 생긴다. 그 ID로 SQL 편집기에서 실행한다.
 
 ```sql
