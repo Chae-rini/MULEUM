@@ -1,8 +1,9 @@
 import {test,expect,type Page} from '@playwright/test';
 async function menu(page:Page,label:string){const narrow=(page.viewportSize()?.width??1440)<=690;if(narrow)await page.getByRole('button',{name:'메뉴 열기',exact:true}).click();const link=page.getByRole('navigation',{name:narrow?'모바일 메뉴':'메인 메뉴',exact:true}).getByRole('link',{name:label,exact:true});const href=await link.getAttribute('href');await link.click();await expect(page).toHaveURL(new RegExp(`${href}$`));}
 test('rendered text has AA contrast on public, student, teacher and administrator screens',async({page})=>{
- for(const path of ['/','/app','/app/teacher','/app/parent','/app/accounts','/app/profile','/app/journal','/app/lesson','/app/videos','/app/questions','/app/goals']){
+ for(const path of ['/','/app','/app/teacher','/app/parent','/app/accounts','/app/profile','/app/journal','/app/lesson','/app/videos','/app/questions','/app/goals','/guide/app']){
   await page.goto(path);await expect(page.getByRole('heading',{level:1})).toBeVisible();
+  await page.evaluate(()=>document.querySelectorAll('details').forEach(d=>{d.open=true;}));
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   const failures=await page.evaluate(()=>{
    const rgb=(value:string)=>value.match(/[\d.]+/g)!.map(Number);

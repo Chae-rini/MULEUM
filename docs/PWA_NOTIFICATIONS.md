@@ -6,9 +6,17 @@ PWA(Progressive Web App)는 웹사이트를 홈 화면에서 앱처럼 여는 �
 
 `public/sw.js` 서비스 워커(Service Worker)는 브라우저의 백그라운드 이벤트 처리 코드입니다. 회원 페이지·API·개인 기록을 캐시하지 않으며 오프라인 학습 기능은 제공하지 않습니다. 푸시 본문은 알려진 종류만 받아 고정 안내로 바꾸고, 클릭은 `/member`로 이동해 인증을 다시 거칩니다. 이름·질문 제목·본문·일기 내용을 표시하지 않습니다.
 
-로그인 → 마이페이지 → 설치와 알림 설정(`/member/notifications`)에서 역할별 가상 설정, 종류별 동의, 시간대·조용한 시간, 선택적 일기 시각을 체험할 수 있습니다. 기본은 모두 꺼짐입니다. 설정은 계정별 sessionStorage에만 저장되고 로그아웃하면 제거됩니다. 회원 DB 저장 완료를 뜻하지 않습니다.
+회원용 알림 설정 화면은 없습니다. 2026-10-24에 가상 설정 체험 화면(`/member/notifications`, `components/notifications/settings.tsx`, `components/pwa/install-help.tsx`)을 삭제했고, 이 주소는 404입니다. 실제 푸시를 연결할 때 설정 화면을 새로 만듭니다. 알림 종류·기본값(모두 꺼짐, 조용한 시간 22:00–08:00, Asia/Seoul)·수신 권한 규칙은 `lib/notifications/model.ts`에 남아 있습니다.
 
-기기 권한 요청은 버튼을 직접 누를 때만 실행합니다. 허용 후 기기 테스트는 서비스 워커에 로컬 메시지를 보내며 외부 푸시를 발송하거나 구독을 생성하지 않습니다. 기기 끄기는 기존 기기 구독과 표시 알림을 해제합니다. 브라우저의 허용 상태 자체는 사용자가 OS·브라우저 설정에서 바꿉니다.
+지금은 어떤 화면도 알림 권한을 요청하지 않습니다. 로그아웃은 기존 기기 구독과 표시된 알림을 해제합니다. 서비스 워커는 페이지에서 보내는 메시지를 받지 않습니다. 삭제한 테스트 버튼이 쓰던 `MULEUM_PREVIEW`와, 보내는 곳이 없던 `MULEUM_CLEAR` 처리를 함께 지웠습니다. 그래서 알림은 푸시 이벤트로만 표시됩니다.
+
+## 사용자 안내 페이지
+
+`/guide/app`은 로그인 없이 볼 수 있는 설치·알림 안내입니다. iPhone·iPad(Safari), Android(Chrome·삼성 인터넷), 컴퓨터(Chrome·Edge·Mac Safari) 설치 순서, 알림이 베타 때 열린다는 안내와 준비 중인 원칙, 역할별 알림 종류, 문제 해결을 담습니다. 로그인 화면과 마이페이지에서 연결됩니다.
+
+- 역할별 알림 종류는 `lib/notifications/model.ts`의 `allowedKinds`·`notificationLabels`에서 그대로 가져옵니다. 종류를 바꾸면 안내도 함께 바뀝니다.
+- 실제 푸시와 설정 화면을 연결하면 안내의 ‘준비 중’ 항목과 ‘알림 받기’ 섹션에 설정 순서를 다시 적어야 합니다.
+- 브라우저 메뉴 이름은 2026-10-24 기준 각 브라우저 한국어 도움말을 따랐습니다. [Chrome 앱 설치](https://support.google.com/chrome/answer/9658361?hl=ko), [Edge 앱 설치](https://support.microsoft.com/ko-kr/microsoft-edge/install-manage-or-uninstall-apps-in-microsoft-edge-0c156575-a94a-45e4-a54f-3a84846f6113), [Mac Safari Dock에 추가](https://support.apple.com/ko-kr/104996), [삼성 인터넷 홈 화면 추가](https://www.samsungsvc.co.kr/solution/36791). iOS 26의 Safari 흐름(`⋯` → 공유 → 홈 화면에 추가 → 웹 앱으로 열기)은 Apple 공식 문서를 확인하지 못해 2차 자료 기준이며, 실제 기기에서 다시 확인해야 합니다.
 
 ## 데이터 모델과 발송 경계
 

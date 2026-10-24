@@ -17,6 +17,6 @@ export function readDemoSession(value: string, secret: string, now = Date.now())
     const data = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
     if (!data || !Number.isSafeInteger(data.expires) || data.expires <= now || data.expires > now + 3600000 ||
         !demoRoles.includes(data.role)) return null;
-    return { id: `demo-${data.role}`, mode: "demo", roles: [data.role], enrollment: data.role === "student" ? "active" : data.role === "alumni" ? "alumni" : "none" };
+    return { id: `demo-${data.role}`, mode: "demo", roles: [data.role], enrollment: data.role === "student" ? "active" : "none" };
   } catch { return null; }
 }

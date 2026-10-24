@@ -10,11 +10,11 @@ const notificationBodies = {
   diary: '원한다면 잠시 나를 돌아보는 시간을 가져보세요.',
 };
 
-async function showSafeNotification(kind, preview = false) {
+async function showSafeNotification(kind) {
   if (!Object.hasOwn(notificationBodies, kind)) return;
-  await self.registration.showNotification(preview ? '물음 · 기기 테스트' : '물음', {
+  await self.registration.showNotification('물음', {
     body: notificationBodies[kind], icon: '/brand/pwa-192.png',
-    tag: `muleum-${preview ? 'preview-' : ''}${kind}`,
+    tag: `muleum-${kind}`,
     // Payload-supplied text, URLs and IDs are deliberately ignored.
     data: { url: '/member' },
   });
@@ -23,13 +23,6 @@ self.addEventListener('push', event => {
   let kind;
   try { kind = event.data?.json()?.kind; } catch { return; }
   event.waitUntil(showSafeNotification(kind));
-});
-self.addEventListener('message', event => {
-  if (!event.source?.url || new URL(event.source.url).origin !== self.location.origin) return;
-  if (event.data?.type === 'MULEUM_PREVIEW') event.waitUntil(showSafeNotification(event.data.kind, true));
-  if (event.data?.type === 'MULEUM_CLEAR') event.waitUntil(self.registration.getNotifications().then(items => {
-    for (const item of items) item.close();
-  }));
 });
 self.addEventListener('notificationclick', event => {
   event.notification.close();

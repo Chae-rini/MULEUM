@@ -9,7 +9,7 @@ export interface Identity {
   roles: AccountRole[];
   enrollment: "active" | "alumni" | "none";
 }
-export const demoRoles = ["student", "parent", "teacher", "alumni", "administrator"] as const;
+export const demoRoles = ["student", "parent"] as const;
 export function isAccountRole(value: unknown): value is AccountRole {
   return typeof value === "string" && Object.hasOwn(accountRoleLabels, value);
 }

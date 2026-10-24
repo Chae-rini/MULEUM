@@ -38,6 +38,6 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <p className="small mt-4 mb-0">별도의 회원가입은 없어요. 처음이라면 관리자가 보낸 초대 링크로 들어와 초대받은 구글 계정으로 로그인해 주세요.{!enabled && " 지금은 Supabase·Google 개발 환경이 연결되지 않아 실제 로그인이 닫혀 있어요."}</p>
     </section>
     {demoEnabled(process.env) && <section className="card auth-demo"><h2>가상 계정으로 체험하기</h2><p className="muted">실제 계정이 필요 없어요. 선택한 역할의 홈과 마이페이지를 살펴보세요. 실제 인증과 분리된 개발용 체험이에요.</p><div className="demo-account-grid">{demoRoles.map(role => <form action={demoLogin} key={role}><input type="hidden" name="role" value={role} /><button className="button line w-full" type="submit">{accountRoleLabels[role]} 체험 시작</button></form>)}</div></section>}
-    <Link href="/app" className="text-button">기존 학습 기능 시연 둘러보기 ↗</Link>
+    <div className="action-row"><Link href="/guide/app" className="text-button">앱 설치와 알림 안내 ↗</Link><Link href="/app" className="text-button">기존 학습 기능 시연 둘러보기 ↗</Link></div>
   </main>;
 }

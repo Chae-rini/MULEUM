@@ -37,7 +37,7 @@ node scripts/test-database.mjs /private/tmp/muleum-sql-check/node_modules/@elect
 
 1. 별도 로컬 Supabase 환경을 준비하고 프로젝트가 로컬인지 확인한다. 운영 프로젝트에 현재 마이그레이션·seed를 실행하지 않는다.
 2. `supabase/migrations/202610230001_members_and_videos.sql`을 검토한 뒤 개발 DB에 적용한다. `supabase/seed.sql`은 테스트용 auth.users 최소 행을 생성하므로 실제 Auth 가입 방식이 아니며 운영에는 사용하지 않는다.
-3. 공개 가입을 비활성화한 단일 Auth 체계를 구성한다. 일반 사용자 회원 행 생성·활성화 권한을 열지 않는다. 서버에서 초대·동의·주 담당·정원을 검증하는 활성화 트랜잭션을 먼저 구현한다.
+3. Google 단일 로그인 체계를 구성한다. Supabase의 새 사용자 가입(`enable_signup`)은 **켜 둔다**. 초대받은 회원도 첫 구글 로그인 때 Auth 사용자가 새로 생기기 때문이다. 이메일 가입은 끈다. 회원 행 생성·활성화는 초대 수락·첫 로그인 확인·보호자 동의 DB 함수로만 하고, 초대가 없는 계정은 앱의 콜백이 거절하고 세션을 폐기한다.
 4. 현재는 추가 패키지 없이 공식 Auth/REST API와 서버 쿠키로 로그인 코드를 준비했다. 아래 로그인 설정 절차를 따른다. 자동 세션 갱신·추가 로그인 방식이 필요하면 공식 SDK 도입을 별도 검토한다. publishable key는 공개 가능한 키지만 service role/secret은 서버 전용이며 NEXT_PUBLIC_ 변수나 번들에 넣지 않는다. 일반 요청에 RLS 우회용 관리자 클라이언트를 쓰지 않는다.
 5. 로그인 세션에서 DB 함수 호출자의 ID를 얻는다. 현재 데모의 역할 선택·actor 인자는 인증 근거로 사용하지 않는다. 실제 프로필을 데모 컨텍스트에 적재하지 않는다.
 6. 직접 REST/SQL/RPC 요청, 탈퇴·철회, 부모 다대다 관계, 미성년자, 관리자 경계, 10번째/100번째 동시 승인과 재시도 검사를 반복한다.
@@ -45,9 +45,35 @@ node scripts/test-database.mjs /private/tmp/muleum-sql-check/node_modules/@elect
 
 SQL 스키마는 새 개발 DB 기준이며 기존 DB에 반복 적용하는 스크립트가 아니다. 연결·배포·비밀키 생성·실제 이메일 전송은 이번 작업에서 실행하지 않았다.
 
+## 로컬 Supabase (Docker)
+
+클라우드 프로젝트 없이 Docker 위에서 Supabase를 실행한다. 비용은 들지 않고, 무료 클라우드 플랜처럼 일시 정지되지도 않는다. 이 DB는 내 컴퓨터에만 있으며 베타용 클라우드 프로젝트와 완전히 별개다.
+
+```bash
+open -a Docker                          # Docker Desktop 실행
+brew install supabase/tap/supabase      # 최초 1회
+cd /Users/kimchaerin/Downloads/muleum-codex-starter
+supabase start                          # 첫 실행은 이미지 다운로드로 수 분
+supabase status                         # 주소 확인
+supabase stop                           # 쓰지 않을 때. 데이터는 유지된다
+```
+
+- `supabase/config.toml`(2026-10-24 `supabase init`)
+  - seed는 끈다. `seed.sql`에는 PGlite 검사용 가상 관리자가 있어서, 켜 두면 첫 관리자 지정이 막힌다.
+  - 이메일 가입은 끄고 새 사용자 가입은 켠다.
+  - 돌아올 주소는 `http://127.0.0.1:3000/auth/callback`이다.
+  - 앱이 쓰지 않는 realtime·storage·edge functions·analytics·메일 테스트 서버는 끈다.
+- `supabase start`가 `supabase/migrations`를 순서대로 적용한다. 2026-10-24 Postgres 17(supabase/postgres 17.11)에서 4개 모두 오류 없이 적용됐다. 확인한 내용은 다음과 같다.
+  - public 테이블 23개 모두 RLS가 켜져 있다.
+  - 익명 요청은 테이블 조회와 RPC 모두 401(42501)로 막힌다.
+  - 첫 관리자 SQL을 트랜잭션 안에서 리허설하고 롤백했다. 지정 후 `my_onboarding_status() = active`였고 학부모 초대 생성도 성공했다.
+- 주소: API `http://127.0.0.1:54321`, Studio `http://127.0.0.1:54323`, DB `postgresql://postgres:postgres@127.0.0.1:54322/postgres`.
+- `.env.local`에는 로컬 주소와 로컬 publishable key를 넣는다. 이 키는 CLI 기본 개발 값이다. `MULEUM_ENABLE_AUTH=true`로 바꾸면 체험 로그인이 사라지고, 체험 로그인을 전제로 한 Playwright 검사가 실패한다. 검사 전에는 `false`로 돌린다.
+- 구글 로그인을 하려면 Google OAuth 클라이언트가 필요하다. 리디렉션 URI는 `http://127.0.0.1:54321/auth/v1/callback`이다(`localhost`와 혼용 불가). 클라이언트 ID·secret은 **프로젝트 최상위 `.env`**에 `GOOGLE_CLIENT_ID`·`GOOGLE_CLIENT_SECRET`으로 넣는다. `config.toml`의 `env()`는 `supabase/` 안이 아니라 최상위 `.env`를 읽는다([Managing config](https://supabase.com/docs/guides/local-development/managing-config)). 같은 파일에 첫 관리자 정보(`MULEUM_ADMIN_EMAIL`·`_NAME`·`_BIRTH_DATE`·`_REGION`·`_ALSO_TEACHER`)도 적는다. `.gitignore`의 `.env*`가 이 파일을 커밋에서 제외한다. Next.js도 최상위 `.env`를 읽지만 앱 코드는 이 값들을 쓰지 않는다. `SUPABASE_`로 시작하는 변수 이름은 CLI가 무시한다는 보고가 있다. 그다음 `config.toml`의 `[auth.external.google]`을 켜고 `supabase stop && supabase start`로 재시작한다.
+
 ## 로그인과 마이페이지 — 추가 구현
 
-`/login`에서 학생·학부모·선생님·졸업생·관리자의 가상 계정을 선택하면 `/member/[role]`로 이동한다. `/mypage`는 해당 계정의 기본 정보와 승인 역할을 보여준다. 비로그인은 로그인 화면으로 보내고, 다른 역할 주소는 서버에서 차단한다. 로그아웃과 새로고침 후 세션 유지가 동작한다.
+`/login`에서 학생·학부모 가상 계정을 선택하면 `/member/[role]`로 이동한다. `/mypage`는 해당 계정의 기본 정보와 승인 역할을 보여준다. 비로그인은 로그인 화면으로 보내고, 다른 역할 주소는 서버에서 차단한다. 로그아웃과 새로고침 후 세션 유지가 동작한다.
 
 `/app`는 기존 기능을 보존한 독립 시연이다. 로그인 계정의 학습 기록으로 취급하거나 자동 이동하지 않는다. 실제 인증된 학생·선생님의 회원 홈에는 `/member/questions`로 연결하는 버튼이 있다. 질문 이외의 학습 기능은 연결 준비 중으로 표시한다. 졸업생 커뮤니티 메뉴는 없으며 기존 `/app/community` 주소는 `/mypage`로 연결한다.
 

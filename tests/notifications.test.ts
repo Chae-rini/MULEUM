@@ -53,6 +53,7 @@ test('service worker strips sensitive payloads, uses fixed destination and never
  const scope={addEventListener:(type:string,fn:(e:unknown)=>void)=>handlers.set(type,fn),location:{origin:'https://muleum.example'},clients:{claim:async()=>{},openWindow:async(url:string)=>opened.push(url)},registration:{showNotification:async(title:string,options:unknown)=>shown.push({title,options})}};
  vm.runInNewContext(readFileSync(new URL('../public/sw.js',import.meta.url),'utf8'),{self:scope,URL});
  assert.equal(handlers.has('fetch'),false);
+ assert.equal(handlers.has('message'),false);
  let pending:Promise<unknown>=Promise.resolve();
  handlers.get('push')!({data:{json:()=>({kind:'question_answer',body:'PRIVATE_DIARY',title:'PRIVATE_NAME',url:'https://evil.invalid'})},waitUntil:(p:Promise<unknown>)=>pending=p});await pending;
  assert.equal(shown.length,1);assert.ok(!JSON.stringify(shown).includes('PRIVATE'));assert.ok(!JSON.stringify(shown).includes('evil'));

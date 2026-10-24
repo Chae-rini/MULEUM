@@ -48,35 +48,32 @@ test("invite links, Google sign-in and onboarding stay closed until Supabase and
   await expect(page).toHaveURL(/\/login\?error=state$/);
 });
 
-test("demo administrators see invitation tools only as a closed placeholder", async ({ page }) => {
+test("only student and parent demos exist and neither can open invitation tools", async ({ page }) => {
   await page.goto("/login");
-  await page.getByRole("button", { name: "관리자 체험 시작", exact: true }).click();
-  await expect(page).toHaveURL(/\/member\/administrator$/);
-  await page.goto("/member/invitations");
-  await expect(page.getByRole("heading", { level: 1, name: "초대와 보호자 동의" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "실제 회원 공간에 연결할 수 없어요." })).toBeVisible();
-  await expect(page.getByRole("textbox")).toHaveCount(0);
-  await accessiblePage(page);
-  await page.getByRole("button", { name: "로그아웃", exact: true }).click();
-  await page.getByRole("button", { name: "학생 체험 시작", exact: true }).click();
-  await expect(page).toHaveURL(/\/member\/student$/);
-  await page.goto("/member/invitations");
-  await expect(page.getByRole("heading", { name: "이 공간에 접근할 권한이 없어요." })).toBeVisible();
+  for (const removed of ["선생님", "졸업생", "관리자"]) await expect(page.getByRole("button", { name: `${removed} 체험 시작`, exact: true })).toHaveCount(0);
+  for (const [label, role] of [["학생", "student"], ["학부모", "parent"]]) {
+    await page.goto("/login");
+    await page.getByRole("button", { name: `${label} 체험 시작`, exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/member/${role}$`));
+    await page.goto("/member/invitations");
+    await expect(page.getByRole("heading", { name: "이 공간에 접근할 권한이 없어요." })).toBeVisible();
+    await expect(page.getByRole("textbox")).toHaveCount(0);
+    await accessiblePage(page);
+    await page.goto(`/member/${role}`);
+    await page.getByRole("button", { name: "로그아웃", exact: true }).click();
+    await expect(page).toHaveURL(/\/login\?logout=done$/);
+  }
 });
 
-test("five demo accounts have separate server-checked homes and a working my page", async ({ page, context }, info) => {
-  const roles = ["student", "parent", "teacher", "alumni", "administrator"];
-  const labels = ["학생", "학부모", "선생님", "졸업생", "관리자"];
+test("student and parent demo accounts have separate server-checked homes and a working my page", async ({ page, context }, info) => {
+  const roles = ["student", "parent"];
+  const labels = ["학생", "학부모"];
   await page.addInitScript(() => localStorage.setItem("muleum:v1:private-journal", JSON.stringify({ version: 1, data: [{ id: "demo", date: "2026-10-23", answers: ["PRIVATE_AUTH_SENTINEL", "", ""] }] })));
   for (let index = 0; index < roles.length; index++) {
     await page.goto("/login");
     await page.getByRole("button", { name: `${labels[index]} 체험 시작`, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/member/${roles[index]}$`));
     await expect(page.getByText(`${labels[index]} 계정`, { exact: true })).toBeVisible();
-    if (roles[index] === "alumni") {
-      await expect(page.getByRole("link", { name: /라운지|모임|게시판|졸업생 공동체/ })).toHaveCount(0);
-      await expect(page.getByText("초기 학습 앱에는 졸업생 커뮤니티를 운영하지 않아요.", { exact: false })).toBeVisible();
-    }
     expect(await page.locator("body").innerHTML()).not.toContain("PRIVATE_AUTH_SENTINEL");
     await expect(page.getByLabel("화면 역할 미리보기")).toHaveCount(0);
     const cookie = (await context.cookies()).find(c => c.name === "muleum-demo-session")!;
@@ -88,11 +85,6 @@ test("five demo accounts have separate server-checked homes and a working my pag
     await page.getByRole("link", { name: "마이페이지 ↗", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1, name: "마이페이지" })).toBeVisible();
     await expect(page.getByText(`가상 ${labels[index]}`, { exact: true })).toBeVisible();
-    if (roles[index] === "alumni") {
-      await page.goto("/app/community");
-      await expect(page.getByRole("heading", { name: "이 페이지를 찾을 수 없어요." })).toBeVisible();
-      await page.goto("/mypage");
-    }
     await page.reload();
     await expect(page.getByText(`가상 ${labels[index]}`, { exact: true })).toBeVisible();
     await accessiblePage(page);
@@ -114,10 +106,10 @@ test("forged role cookies and malformed sessions cannot open member pages", asyn
   const cookie = (await context.cookies()).find(c => c.name === "muleum-demo-session")!;
   const [payload, signature] = cookie.value.split(".");
   const data = JSON.parse(Buffer.from(payload, "base64url").toString());
-  data.role = "administrator";
+  data.role = "parent";
   const forged = `${Buffer.from(JSON.stringify(data)).toString("base64url")}.${signature}`;
   await context.addCookies([{ ...cookie, value: forged }]);
-  await page.goto("/member/administrator");
+  await page.goto("/member/parent");
   await expect(page).toHaveURL(/\/login$/);
   await context.addCookies([{ ...cookie, value: "corrupt-session" }]);
   await page.goto("/mypage");

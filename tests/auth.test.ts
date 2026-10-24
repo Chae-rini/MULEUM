@@ -33,6 +33,7 @@ test("demo session rejects tampering, malformed signatures, expiry and unknown r
   const forged = Buffer.from(JSON.stringify({ role: "administrator", expires: 3601000 })).toString("base64url") + "." + session.split(".")[1];
   assert.equal(readDemoSession(forged, "test-secret", 1001), null);
   assert.throws(() => signDemoSession("constructor", "test-secret"));
+  for (const removed of ["teacher", "alumni", "administrator"]) assert.throws(() => signDemoSession(removed, "test-secret"));
 });
 
 test("real auth requires explicit enablement and publishable keys; demo is development only", () => {
