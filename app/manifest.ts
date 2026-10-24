@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: '/', name: '물음 · MULEUM', short_name: '물음', lang: 'ko',
     description: '질문으로 만나고 함께 배우는 물음',
     start_url: '/member', scope: '/', display: 'standalone',
-    background_color: '#F8FBFF', theme_color: '#F8FBFF',
+    background_color: '#FFFFFF', theme_color: '#FFFFFF',
     icons: [192, 512].map(size => ({ src: `/brand/pwa-${size}.png`, sizes: `${size}x${size}`, type: 'image/png', purpose: 'any' })),
   };
 }

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>물음 홈페이지 A안 — 디자인 기준 시안</title>
+<!-- 디자인 기준 시안(reference). 실제 구현은 components/public-home.tsx 에서 한다.
+     이 파일은 docs/design/ 에 두고 브라우저로 열어 비교용으로만 쓴다. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#2F6FA8}a:hover{color:#14284B}
+.hero-bg{background-image:url(../../public/brand/library-lounge.jpg);background-size:cover;background-position:center}
+</style>
+</head>
+<body>
+<div style="font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif; color: #1E2A3A; background: #FFFFFF; min-width: 0;">
+
+<header style="border-bottom: 1px solid #D8E2EC; background: #FFFFFF;">
+<div style="max-width: 1200px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+<a href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #14284B;">
+<img src="../../public/brand/muleum-icon-blue.png" alt="" style="width: 36px; height: 36px; border-radius: 8px; object-fit: cover;">
+<span style="font-size: 20px; font-weight: 800; letter-spacing: -0.02em;">물음</span>
+<span style="font-size: 12px; font-weight: 500; letter-spacing: 0.12em; color: #5B6778;">MULEUM</span>
+</a>
+<nav style="display: flex; flex-wrap: wrap; align-items: center; gap: 24px;">
+<a href="#why" style="font-size: 14px; font-weight: 500; color: #1E2A3A; text-decoration: none;">왜 물음인가</a>
+<a href="#how" style="font-size: 14px; font-weight: 500; color: #1E2A3A; text-decoration: none;">배움의 방식</a>
+<a href="#believe" style="font-size: 14px; font-weight: 500; color: #1E2A3A; text-decoration: none;">물음의 철학</a>
+<a href="#people" style="font-size: 14px; font-weight: 500; color: #1E2A3A; text-decoration: none;">함께하는 사람들</a>
+<a href="#beta" style="font-size: 14px; font-weight: 700; color: #FFFFFF; background: #14284B; text-decoration: none; padding: 12px 18px; border-radius: 12px; min-height: 20px;">시연 공간 둘러보기</a>
+</nav>
+</div>
+</header>
+
+<section id="top" class="hero-bg" style="position: relative;">
+<div style="background: rgba(20, 40, 75, 0.78);">
+<div style="max-width: 1200px; margin: 0 auto; padding: 120px 24px 112px; display: flex; flex-direction: column; gap: 28px;">
+<p style="margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 0.14em; color: #A9CDEB;">MULEUM · 질문으로 배우는 교육 공동체</p>
+<h1 style="margin: 0; font-size: clamp(38px, 5.4vw, 68px); line-height: 1.22; font-weight: 800; letter-spacing: -0.03em; color: #FFFFFF; white-space: pre-line;">배움이 머무는 곳,
+<span style="color: #A9CDEB;">질문이 시작되는 곳.</span></h1>
+<p style="margin: 0; max-width: 560px; font-size: 18px; line-height: 1.75; color: #E6F1FA;">모든 배움은 하나의 질문에서 시작된다.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; padding-top: 8px;">
+<a href="#how" style="display: inline-flex; align-items: center; gap: 10px; padding: 16px 24px; border-radius: 12px; background: #E6F1FA; color: #14284B; font-size: 16px; font-weight: 700; text-decoration: none;">물음이 자라는 과정 보기
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><path d="M8 7h9v9"></path></svg></a>
+<a href="#beta" style="display: inline-flex; align-items: center; padding: 16px 24px; border-radius: 12px; border: 1px solid rgba(230, 241, 250, 0.6); color: #FFFFFF; font-size: 16px; font-weight: 500; text-decoration: none;">시연 공간 둘러보기</a>
+</div>
+<p style="margin: 40px 0 0; font-size: 12px; color: #C9DAEA;">배경 사진은 분위기를 위한 이미지이며, 물음의 운영 시설이 아닙니다. Photo: Kyle Ryan / Unsplash</p>
+</div>
+</div>
+</section>
+
+<section id="why" style="background: #FFFFFF;">
+<div style="max-width: 1200px; margin: 0 auto; padding: 112px 24px; display: flex; flex-direction: column; gap: 48px;">
+<div style="display: flex; flex-direction: column; gap: 14px;">
+<p style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: #2F6FA8;">01&nbsp;&nbsp;&nbsp;WHY MULEUM</p>
+<div style="height: 1px; background: #7FB3DD;"></div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start;">
+<div style="flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 20px;">
+<h2 style="margin: 0; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.4; font-weight: 800; letter-spacing: -0.03em; color: #14284B;">무엇을 해야 할지 모르는 것은<br>잘못이 아닙니다.</h2>
+<p style="margin: 0; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.45; font-weight: 700; letter-spacing: -0.02em; color: #2F6FA8;">다만 혼자서는 그 질문을<br>꺼내기 어렵습니다.</p>
+</div>
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 28px;">
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #14284B;">물음이 하는 일</h3>
+<p style="margin: 0; font-size: 16px; line-height: 1.85; color: #1E2A3A;">물음의 선생님은 길을 대신 정해주지 않고, 여러 갈래의 길을 보여줍니다. 학생은 매일의 질문과 회고 속에서 자신의 고민을 스스로 발견하고, 언젠가 목표가 생겼을 때 걸어갈 기반을 쌓습니다.</p>
+</div>
+<div style="height: 1px; background: #D8E2EC;"></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 24px;">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 13px; font-weight: 500; color: #5B6778;">대상</span>
+<span style="font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #14284B;">중·고등학생</span>
+<span style="font-size: 13px; color: #5B6778;">고등학생 중심</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 13px; font-weight: 500; color: #5B6778;">운영 방식</span>
+<span style="font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #14284B;">초대제 소수 과외</span>
+<span style="font-size: 13px; color: #5B6778;">대면·비대면</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 13px; font-weight: 500; color: #5B6778;">하루의 물음</span>
+<span style="font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: #14284B;">질문 3개 × 2번</span>
+<span style="font-size: 13px; color: #5B6778;">일과 중 한 번, 자기 전 한 번</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="how" style="background: #F7F3EC;">
+<div style="max-width: 1200px; margin: 0 auto; padding: 112px 24px; display: flex; flex-direction: column; gap: 48px;">
+<div style="display: flex; flex-direction: column; gap: 14px;">
+<p style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: #2F6FA8;">02&nbsp;&nbsp;&nbsp;HOW A QUESTION GROWS</p>
+<div style="height: 1px; background: #7FB3DD;"></div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end; justify-content: space-between;">
+<h2 style="margin: 0; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.4; font-weight: 800; letter-spacing: -0.03em; color: #14284B;">하나의 물음이 자라는 과정</h2>
+<p style="margin: 0; font-size: 18px; font-weight: 700; color: #2F6FA8;">정답 대신, 여러 갈래의 길.</p>
+</div>
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; border-top: 2px solid #14284B;">
+<li style="padding: 28px 24px 8px 0; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 14px; font-weight: 800; color: #2F6FA8;">01</span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #14284B;">질문에 답하기</h3>
+<p style="margin: 0; font-size: 15px; line-height: 1.75; color: #5B6778;">하루 두 번, 오늘에 대한 질문 3가지에 답해요. 막막한 일기 대신 질문이 시작점이 돼요.</p>
+</li>
+<li style="padding: 28px 24px 8px 0; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 14px; font-weight: 800; color: #2F6FA8;">02</span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #14284B;">스스로 묻기</h3>
+<p style="margin: 0; font-size: 15px; line-height: 1.75; color: #5B6778;">답하다 생긴 궁금증을 나 자신에게 남기고, 새로운 질문을 직접 만들어 제시해요.</p>
+</li>
+<li style="padding: 28px 24px 8px 0; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 14px; font-weight: 800; color: #2F6FA8;">03</span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #14284B;">함께 돌아보기</h3>
+<p style="margin: 0; font-size: 15px; line-height: 1.75; color: #5B6778;">쌓인 회고를 선생님과 다시 읽으며, 요즘의 고민이 무엇인지 스스로 발견해요.</p>
+</li>
+<li style="padding: 28px 24px 8px 0; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 14px; font-weight: 800; color: #2F6FA8;">04</span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #14284B;">길을 고르기</h3>
+<p style="margin: 0; font-size: 15px; line-height: 1.75; color: #5B6778;">선생님은 여러 갈래의 길을 보여주고, 어느 길로 갈지는 학생이 골라요.</p>
+</li>
+</ol>
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch;">
+<div style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #D8E2EC; border-radius: 12px; padding: 32px; display: flex; flex-direction: column; gap: 16px;">
+<p style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #2F6FA8;">오늘의 물음 · 자기 전</p>
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<p style="margin: 0; padding: 14px 20px; border-radius: 9999px; background: #E6F1FA; font-size: 15px; color: #14284B;">[예시 질문 1 — 확정 후 입력]</p>
+<p style="margin: 0; padding: 14px 20px; border-radius: 9999px; background: #E6F1FA; font-size: 15px; color: #14284B;">[예시 질문 2 — 확정 후 입력]</p>
+<p style="margin: 0; padding: 14px 20px; border-radius: 9999px; background: #E6F1FA; font-size: 15px; color: #14284B;">[예시 질문 3 — 확정 후 입력]</p>
+</div>
+</div>
+<div style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #D8E2EC; border-radius: 12px; padding: 32px; display: flex; flex-direction: column; gap: 16px;">
+<p style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #2F6FA8;">2주 뒤, 함께 돌아보기</p>
+<p style="margin: 0; font-size: 18px; line-height: 1.7; font-weight: 500; color: #14284B;">[선생님이 회고를 함께 읽으며 건넨 질문 — 확정 후 입력]</p>
+<p style="margin: 0; font-size: 15px; line-height: 1.75; color: #5B6778;">[학생이 스스로 발견한 고민과, 선생님이 보여준 길 — 확정 후 입력]</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="believe" style="background: #14284B;">
+<div style="max-width: 1200px; margin: 0 auto; padding: 112px 24px; display: flex; flex-direction: column; gap: 48px;">
+<div style="display: flex; flex-direction: column; gap: 14px;">
+<p style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: #A9CDEB;">03&nbsp;&nbsp;&nbsp;WHAT WE BELIEVE</p>
+<div style="height: 1px; background: rgba(169, 205, 235, 0.5);"></div>
+</div>
+<h2 style="margin: 0; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.4; font-weight: 800; letter-spacing: -0.03em; color: #FFFFFF;">잘 해내는 사람보다,<br>스스로 선택하는 사람으로.</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 40px 48px;">
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 1px solid rgba(169, 205, 235, 0.35);">
+<span style="font-size: 15px; font-weight: 800; color: #A9CDEB;">01&nbsp;&nbsp;질문할 자유</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.8; color: #D5E3F1;">왜, 어떻게, 정말 그런가. 공부와 일상의 모든 궁금증을 환영해요. 아직 답을 찾지 못해도 괜찮아요.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 1px solid rgba(169, 205, 235, 0.35);">
+<span style="font-size: 15px; font-weight: 800; color: #A9CDEB;">02&nbsp;&nbsp;선택할 권리</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.8; color: #D5E3F1;">꿈이나 성공의 기준을 대신 정하지 않아요. 작은 목표부터 자신의 말로 선택하고 돌아봐요.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 1px solid rgba(169, 205, 235, 0.35);">
+<span style="font-size: 15px; font-weight: 800; color: #A9CDEB;">03&nbsp;&nbsp;관계 속의 배움</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.8; color: #D5E3F1;">독서와 대화, 다양한 경험으로 서로의 관점을 넓혀요. 선생님도 배우는 공동체의 한 사람이에요.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="people" style="background: #FFFFFF;">
+<div style="max-width: 1200px; margin: 0 auto; padding: 112px 24px; display: flex; flex-direction: column; gap: 48px;">
+<div style="display: flex; flex-direction: column; gap: 14px;">
+<p style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: #2F6FA8;">04&nbsp;&nbsp;&nbsp;PEOPLE BEFORE TECHNOLOGY</p>
+<div style="height: 1px; background: #7FB3DD;"></div>
+</div>
+<h2 style="margin: 0; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.4; font-weight: 800; letter-spacing: -0.03em; color: #14284B;">배움의 중심에는<br>언제나 사람이 있어요.</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+<div style="border: 1px solid #D8E2EC; border-radius: 12px; padding: 28px; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 13px; font-weight: 700; color: #2F6FA8;">학생</span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #14284B;">나의 질문과 선택</h3>
+<p style="margin: 0; font-size: 15px; line-height: 1.75; color: #5B6778;">오늘의 물음, 작은 목표, 회고. 내 생각을 내 언어로 기록하는 공간이에요.</p>
+</div>
+<div style="border: 1px solid #D8E2EC; border-radius: 12px; padding: 28px; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 13px; font-weight: 700; color: #2F6FA8;">선생님</span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #14284B;">함께 탐구하는 동료</h3>
+<p style="margin: 0; font-size: 15px; line-height: 1.75; color: #5B6778;">학생의 생각을 먼저 듣고, 길을 정해주는 대신 여러 갈래의 길을 보여줘요.</p>
+</div>
+<div style="border: 1px solid #D8E2EC; border-radius: 12px; padding: 28px; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 13px; font-weight: 700; color: #2F6FA8;">학부모</span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #14284B;">신뢰로 지켜보는 성장</h3>
+<p style="margin: 0; font-size: 15px; line-height: 1.75; color: #5B6778;">학생이 동의하고 선생님이 승인한 학습 리포트로 배움의 방향을 나눠요.</p>
+</div>
+</div>
+<div style="background: #E6F1FA; border-radius: 12px; padding: 36px 40px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;">
+<div style="flex: 0 0 auto; width: 48px; height: 48px; border-radius: 9999px; background: #14284B; display: flex; align-items: center; justify-content: center;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
+</div>
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #14284B;">AI는 선생님의 보조예요.</h3>
+<p style="margin: 0; font-size: 16px; line-height: 1.8; color: #1E2A3A;">학생의 회고와 독서에 어울리는 질문을 제안하고, 아직 경험이 짧은 선생님이 미처 보지 못한 관점을 보완해요. 어떤 질문을 건넬지는 언제나 사람이 정해요.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="beta" style="background: #F7F3EC;">
+<div style="max-width: 1200px; margin: 0 auto; padding: 104px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px;">
+<p style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: #2F6FA8;">A SMALL, TRUSTED BEGINNING</p>
+<h2 style="margin: 0; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.4; font-weight: 800; letter-spacing: -0.03em; color: #14284B;">작게 시작하고,<br>신뢰를 쌓으며 함께 자라요.</h2>
+<p style="margin: 0; max-width: 560px; font-size: 16px; line-height: 1.8; color: #5B6778;">물음은 초대 기반 비공개 운영을 준비 중이에요. 지금은 가상 데이터로 구성한 시연 공간을 살펴볼 수 있어요.</p>
+<a href="#top" style="margin-top: 12px; display: inline-flex; align-items: center; gap: 10px; padding: 16px 28px; border-radius: 12px; background: #14284B; color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none;">시연 공간 둘러보기
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><path d="M8 7h9v9"></path></svg></a>
+</div>
+</section>
+
+<footer style="background: #FFFFFF; border-top: 1px solid #D8E2EC;">
+<div style="max-width: 1200px; margin: 0 auto; padding: 36px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between;">
+<div style="display: flex; flex-direction: column; gap: 4px;">
+<strong style="font-size: 15px; color: #14284B;">물음 · MULEUM</strong>
+<span style="font-size: 13px; color: #5B6778;">모든 배움은 하나의 질문에서 시작된다.</span>
+</div>
+<a href="#top" style="font-size: 13px; color: #2F6FA8;">위로 돌아가기 ↑</a>
+</div>
+</footer>
+
+</div>
+</body>
+</html>
