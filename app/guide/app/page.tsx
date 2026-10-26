@@ -31,7 +31,7 @@ export default function AppGuidePage() {
     <a className="skip-link" href="#main-content">본문으로 바로가기</a>
     <div className="site">
       <div className="header-bar"><div className="shell-container guide-header">
-        <Link href="/" className="logo" aria-label="물음 홈"><Image className="brand-mark" src="/brand/muleum-icon-sky.png" alt="" width={36} height={36} /><strong>물음<span className="brand-english">MULEUM</span></strong></Link>
+        <Link href="/" className="logo" aria-label="물음 홈"><Image className="brand-mark" src="/brand/muleum-icon-question.png" alt="" width={36} height={36} /><strong>물음<span className="brand-english">MULEUM</span></strong></Link>
         <Link href="/login" className="text-button">회원 로그인</Link>
       </div></div>
 

@@ -13,7 +13,7 @@ const notificationBodies = {
 async function showSafeNotification(kind) {
   if (!Object.hasOwn(notificationBodies, kind)) return;
   await self.registration.showNotification('물음', {
-    body: notificationBodies[kind], icon: '/brand/muleum-icon-sky-192.png',
+    body: notificationBodies[kind], icon: '/brand/muleum-icon-question-192.png',
     tag: `muleum-${kind}`,
     // Payload-supplied text, URLs and IDs are deliberately ignored.
     data: { url: '/member' },

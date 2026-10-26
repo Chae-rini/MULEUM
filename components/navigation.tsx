@@ -15,7 +15,7 @@ interface NavigationItem<T extends string> {
 function Brand({ href }: { href: string }) {
   return (
     <Link className="logo" href={href} aria-label="물음 홈">
-      <Image className="brand-mark" src="/brand/muleum-icon-sky.png" alt="" width={56} height={56} sizes="56px" />
+      <Image className="brand-mark" src="/brand/muleum-icon-question.png" alt="" width={56} height={56} sizes="56px" />
       <span>
         <strong>물음<span className="brand-english">MULEUM</span></strong>
         <small>모든 배움은 하나의 질문에서</small>

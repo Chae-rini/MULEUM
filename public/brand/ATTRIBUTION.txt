@@ -1,7 +1,11 @@
 MULEUM visual assets
 Verified: 2026-10-23
 
-muleum-icon-sky.png (current official icon, 2026-10-24)
+muleum-icon-question.png (current official icon, 2026-10-25)
+Source: original image supplied by the project owner.
+Copied unchanged. muleum-icon-question-*.png are resized or square-cropped derivatives; no new artwork was drawn.
+
+muleum-icon-sky.png (previous official icon, 2026-10-24; preserved, unused)
 Source: original image supplied by the project owner.
 Copied unchanged. muleum-icon-sky-*.png are resized or square-cropped derivatives; no new artwork was drawn.
 
