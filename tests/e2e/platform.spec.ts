@@ -100,18 +100,36 @@ test("existing private records stay out of other spaces and the public site", as
   await expect(page.getByRole("heading", { name: "PRIVATE_QUESTION_SENTINEL", exact: true })).toBeVisible();
 });
 
-test("sky decorations stay hidden from assistive technology and the cloud drift stops when motion is reduced", async ({ page }) => {
-  await page.goto("/");
-  for (const selector of [".sparkle", ".cloud-bank"]) {
-    expect(await page.locator(selector).evaluateAll(nodes => nodes.every(node => node.getAttribute("aria-hidden") === "true"))).toBe(true);
+test("sparkles stay hidden from assistive technology and no cloud decoration remains on icon pages", async ({ page }) => {
+  for (const path of ["/", "/login", `/invite/${"a".repeat(43)}`, "/guide/app"]) {
+    await page.goto(path);
+    const sparkles = page.locator(".sparkle");
+    expect(await sparkles.evaluateAll(nodes => nodes.every(node => node.getAttribute("aria-hidden") === "true"))).toBe(true);
+    await expect(page.locator('[class*="cloud"]')).toHaveCount(0);
+    await fits(page);
   }
-  const drift = page.locator(".cloud-drift").first();
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(drift).toHaveCSS("animation-name", "cloud-drift");
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(drift).toHaveCSS("animation-name", "none");
-  await expect(drift).toHaveCSS("transform", "none");
-  await page.goto("/login");
-  await expect(page.locator(".auth-intro .cloud-island")).toHaveAttribute("aria-hidden", "true");
+});
+
+test("the night sky shows only on the dark home hero, with fixed stars that stop twinkling when motion is reduced", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light", reducedMotion: "no-preference" });
+  await page.goto("/");
+  await expect(page.locator(".night-sky")).toBeHidden();
+  await page.emulateMedia({ colorScheme: "dark" });
+  const sky = page.locator("#top .night-sky");
+  await expect(sky).toBeVisible();
+  await expect(sky).toHaveAttribute("aria-hidden", "true");
+  const stars = () => sky.locator("circle").evaluateAll(nodes => nodes.map(node => `${node.getAttribute("cx")},${node.getAttribute("cy")},${node.getAttribute("r")}`));
+  const first = await stars();
+  expect(first).toHaveLength(70);
+  await page.reload();
+  expect(await stars()).toEqual(first);
+  const twinkle = sky.locator("circle.twinkle").first();
+  await expect(twinkle).toHaveCSS("animation-name", "star-twinkle");
+  await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
+  await expect(twinkle).toHaveCSS("animation-name", "none");
+  for (const path of ["/app/questions", "/login"]) {
+    await page.goto(path);
+    await expect(page.locator(".night-sky")).toHaveCount(0);
+  }
   await fits(page);
 });

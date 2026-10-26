@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Navigation } from "./navigation";
 import { Icon } from "./icon";
-import { CloudBank, Sparkle } from "./sky";
+import { NightSky, Sparkle } from "./sky";
 import styles from "./public-home.module.css";
 
 const links = [
@@ -53,7 +53,7 @@ export function PublicHome() {
       </div></div>
 
       <main id="public-content" tabIndex={-1}>
-        <section id="top" className={styles.hero}><div className={styles.heroOverlay}><div className={`${styles.container} ${styles.heroInner}`}>
+        <section id="top" className={styles.hero}><div className={styles.heroOverlay}><NightSky /><div className={`${styles.container} ${styles.heroInner}`}>
           <p className={styles.heroEyebrow}><Sparkle />MULEUM · 질문으로 배우는 교육 공동체</p>
           <h1 className={styles.heroTitle}>배움이 머무는 곳,<br /><span>질문이 시작되는 곳.</span></h1>
           <p className={styles.heroLead}>모든 배움은 하나의 질문에서 시작된다.</p>
@@ -62,7 +62,7 @@ export function PublicHome() {
             <Link href="/app" className={styles.heroSecondary}>시연 공간 둘러보기</Link>
           </div>
           <p className={styles.heroCredit}>배경 사진은 분위기를 위한 이미지이며, 물음의 운영 시설이 아닙니다. Photo: Kyle Ryan / Unsplash</p>
-        </div><CloudBank /></div></section>
+        </div></div></section>
 
         <section id="why" className={styles.section}><div className={`${styles.container} ${styles.sectionInner}`}>
           <SectionLabel number="01" label="WHY MULEUM" />

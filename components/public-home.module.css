@@ -1,23 +1,21 @@
 /* Home aliases point at app/theme.css tokens; no colour values live in this file. */
 .home {
-  --home-navy: var(--brand-action);
+  --home-text: var(--text-strong);
+  --home-action: var(--brand-action);
+  --home-on-action: var(--primary-foreground);
+  --home-band: var(--band);
+  --home-on-band: var(--on-band);
+  --home-surface: var(--surface);
+  --home-ground: var(--ground);
   --home-blue: var(--accent-ink);
   --home-sky: var(--surface-blue);
   --home-paper: var(--surface-paper);
-  --home-sky-ink: var(--brand-primary-light);
   --home-ink: var(--text-primary);
   --home-muted: var(--text-secondary);
   --home-line: var(--border-default);
   --home-rule: var(--brand-primary);
-  --home-on-navy: var(--on-navy);
-  --home-caption: var(--on-navy-muted);
-  --home-white: var(--surface);
-  --home-overlay: color-mix(in srgb, var(--brand-action) 78%, transparent);
-  --home-rule-on-navy: color-mix(in srgb, var(--brand-primary-light) 50%, transparent);
-  --home-line-on-navy: color-mix(in srgb, var(--brand-primary-light) 35%, transparent);
-  --home-outline-on-navy: color-mix(in srgb, var(--surface-blue) 60%, transparent);
   min-height: 100vh;
-  background: var(--home-white);
+  background: var(--home-ground);
   color: var(--home-ink);
   font-size: 16px;
   line-height: 1.75;
@@ -27,60 +25,60 @@
 .container { max-width: 1200px; margin: 0 auto; padding-inline: 24px; box-sizing: border-box; }
 
 /* Header: reuses Navigation for the mobile drawer, focus trap and Esc handling. */
-.headerBar { background: var(--home-white); border-bottom: 1px solid var(--home-line); }
+.headerBar { background: var(--home-surface); border-bottom: 1px solid var(--home-line); }
 .headerBar :global(.site-header) { margin: 0; padding: 14px 0; }
 .headerBar :global(.topbar) { gap: 16px; padding: 0; border: 0; }
-.headerBar :global(.logo) { gap: 10px; padding: 0; color: var(--home-navy); }
+.headerBar :global(.logo) { gap: 10px; padding: 0; color: var(--home-text); }
 .headerBar :global(.header-brand .brand-mark) { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; }
-.headerBar :global(.logo strong) { gap: 10px; align-items: baseline; font-size: 20px; font-weight: 800; letter-spacing: -.02em; color: var(--home-navy); }
+.headerBar :global(.logo strong) { gap: 10px; align-items: baseline; font-size: 20px; font-weight: 800; letter-spacing: -.02em; color: var(--home-text); }
 .headerBar :global(.brand-english) { display: inline; font-size: 12px; font-weight: 500; letter-spacing: .12em; color: var(--home-muted); }
 .headerBar :global(.logo small) { display: none; }
-.headerBar :global(.menu-toggle) { border-color: var(--home-line); color: var(--home-navy); }
+.headerBar :global(.menu-toggle) { border-color: var(--home-line); color: var(--home-text); }
 .headerBar :global(.desktop-nav) { gap: 24px; padding: 12px 0 0; border: 0; }
 .headerBar :global(.desktop-nav a) { min-height: 44px; padding: 0; border-radius: 0; background: transparent; color: var(--home-ink); font-size: 14px; font-weight: 500; }
 .headerBar :global(.desktop-nav a:hover) { background: transparent; color: var(--home-blue); }
 .headerBar :global(.desktop-nav .nav-icon) { display: none; }
-.headerCta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 12px; background: var(--home-navy); color: var(--home-white); font-size: 14px; font-weight: 700; white-space: nowrap; }
+.headerCta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 12px; background: var(--home-action); color: var(--home-on-action); font-size: 14px; font-weight: 700; white-space: nowrap; }
 .headerCta:hover { background: var(--home-blue); }
 
-/* Hero: a library above the clouds. The photo shows through a sky overlay that never drops below --hero-scrim where
-   text sits (tests/design.test.ts checks text against that overlay over a black pixel); a cloud bank closes the bottom.
+/* Hero: a library under a clear sky. The photo shows through a sky overlay that never drops below --hero-scrim where
+   text sits (tests/design.test.ts checks text against that overlay over a black pixel); the bottom fades into the next section.
    The solid sky under the photo keeps the hero readable before the image loads. */
-.hero { --hero-scrim: 92%; --hero-text-zone: max(860px, calc(50% + 320px)); --cloud-bank-height: clamp(72px, 8vw, 128px); position: relative; background: var(--sky-top) url("/brand/library-lounge.jpg") center / cover no-repeat; }
+.hero { --hero-scrim: 92%; --hero-scrim-far: 55%; --hero-text-zone: max(860px, calc(50% + 320px)); position: relative; background: var(--sky-top) url("/brand/library-lounge.jpg") center / cover no-repeat; }
 .heroOverlay {
   position: relative; overflow: hidden;
   background:
-    linear-gradient(to bottom, transparent 40%, color-mix(in srgb, var(--surface-blue) 70%, transparent) 100%),
-    linear-gradient(90deg, color-mix(in srgb, var(--sky-top) var(--hero-scrim), transparent) 0 var(--hero-text-zone), color-mix(in srgb, var(--sky-top) 55%, transparent) 100%);
+    linear-gradient(to bottom, transparent 76%, var(--hero-fade) 100%),
+    linear-gradient(to bottom, transparent 40%, color-mix(in srgb, var(--sky-low) 70%, transparent) 100%),
+    linear-gradient(90deg, color-mix(in srgb, var(--sky-top) var(--hero-scrim), transparent) 0 var(--hero-text-zone), color-mix(in srgb, var(--sky-top) var(--hero-scrim-far), transparent) 100%);
 }
-.heroInner { position: relative; display: flex; flex-direction: column; gap: 28px; padding-block: 120px calc(var(--cloud-bank-height) + 24px); }
-.heroEyebrow { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .14em; color: var(--home-navy); }
-.heroTitle { margin: 0; font-size: clamp(38px, 5.4vw, 68px); line-height: 1.22; font-weight: 800; letter-spacing: -.03em; color: var(--home-navy); }
+.heroInner { position: relative; display: flex; flex-direction: column; gap: 28px; padding-block: 120px 112px; }
+.heroEyebrow { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .14em; color: var(--home-text); }
+.heroTitle { margin: 0; font-size: clamp(38px, 5.4vw, 68px); line-height: 1.22; font-weight: 800; letter-spacing: -.03em; color: var(--home-text); }
 /* Accent blue only reaches 3:1 over the overlay, so it stays on this large title text. */
 .heroTitle span { color: var(--home-blue); }
 .heroLead { margin: 0; max-width: 560px; font-size: 18px; line-height: 1.75; color: var(--home-ink); }
 .heroActions { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 8px; }
 .heroPrimary, .heroSecondary { display: inline-flex; align-items: center; gap: 10px; padding: 16px 24px; border-radius: 12px; font-size: 16px; }
-.heroPrimary { background: var(--home-navy); color: var(--home-white); font-weight: 700; }
+.heroPrimary { background: var(--home-action); color: var(--home-on-action); font-weight: 700; }
 .heroPrimary:hover { background: var(--home-blue); }
 .heroPrimary :global(.lucide-icon) { width: 18px; height: 18px; }
-.heroSecondary { border: 1px solid var(--home-line); background: var(--home-white); color: var(--home-navy); font-weight: 500; }
-.heroSecondary:hover { border-color: var(--home-navy); }
+.heroSecondary { border: 1px solid var(--home-line); background: var(--home-surface); color: var(--home-text); font-weight: 500; }
+.heroSecondary:hover { border-color: var(--home-text); }
 .heroCredit { margin: 40px 0 0; font-size: 12px; line-height: 1.6; color: var(--home-ink); }
-.hero :global(.cloud-bank) { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: var(--cloud-bank-height); }
 
 /* Shared section rhythm */
-.section { padding-block: 112px; background: var(--home-white); scroll-margin-top: 0; }
+.section { padding-block: 112px; background: var(--home-ground); scroll-margin-top: 0; }
 .paper { background: var(--home-paper); }
-.navy { background: var(--home-navy); }
+.navy { background: var(--home-band); }
 .sectionInner { display: flex; flex-direction: column; gap: 48px; }
 .sectionLabel { display: flex; flex-direction: column; gap: 14px; }
 .sectionLabel p { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .12em; color: var(--home-blue); }
 .rule { height: 1px; background: var(--home-rule); }
-.sectionLabelDark p { color: var(--home-sky-ink); }
-.sectionLabelDark .rule { background: var(--home-rule-on-navy); }
-.sectionTitle { margin: 0; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.4; font-weight: 800; letter-spacing: -.03em; color: var(--home-navy); }
-.onNavy { color: var(--home-white); }
+.sectionLabelDark p { color: var(--band-label); }
+.sectionLabelDark .rule { background: var(--band-rule); }
+.sectionTitle { margin: 0; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.4; font-weight: 800; letter-spacing: -.03em; color: var(--home-text); }
+.onNavy { color: var(--home-on-band); }
 
 /* 01 WHY */
 .split { display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start; }
@@ -88,48 +86,48 @@
 .whySub { margin: 0; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.45; font-weight: 700; letter-spacing: -.02em; color: var(--home-blue); }
 .whyBody { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 28px; }
 .whyText { display: flex; flex-direction: column; gap: 12px; }
-.whyText h3 { margin: 0; font-size: 20px; font-weight: 700; color: var(--home-navy); }
+.whyText h3 { margin: 0; font-size: 20px; font-weight: 700; color: var(--home-text); }
 .whyText p { margin: 0; font-size: 16px; line-height: 1.85; color: var(--home-ink); }
 .divider { height: 1px; background: var(--home-line); }
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 24px; margin: 0; }
 .facts > div { display: flex; flex-direction: column; gap: 6px; }
 .facts dt, .facts dd { margin: 0; font-size: 13px; line-height: 1.6; color: var(--home-muted); }
 .facts dt { font-weight: 500; }
-.facts .factValue { font-size: 24px; line-height: 1.4; font-weight: 800; letter-spacing: -.02em; color: var(--home-navy); }
+.facts .factValue { font-size: 24px; line-height: 1.4; font-weight: 800; letter-spacing: -.02em; color: var(--home-text); }
 
 /* 02 HOW */
 .howHeading { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end; justify-content: space-between; }
 .howHeading p { margin: 0; font-size: 18px; font-weight: 700; color: var(--home-blue); }
-.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; margin: 0; padding: 0; list-style: none; border-top: 2px solid var(--home-navy); }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; margin: 0; padding: 0; list-style: none; border-top: 2px solid var(--home-text); }
 .steps li { display: flex; flex-direction: column; gap: 10px; padding: 28px 24px 8px 0; }
 .steps span { font-size: 14px; font-weight: 800; color: var(--home-blue); }
-.steps h3 { margin: 0; font-size: 20px; font-weight: 700; color: var(--home-navy); }
+.steps h3 { margin: 0; font-size: 20px; font-weight: 700; color: var(--home-text); }
 .steps p { margin: 0; font-size: 15px; line-height: 1.75; color: var(--home-muted); }
 .examples { display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch; }
-.exampleCard { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 32px; border: 1px solid var(--home-line); border-radius: 12px; background: var(--home-white); }
+.exampleCard { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 32px; border: 1px solid var(--home-line); border-radius: 12px; background: var(--home-surface); }
 .exampleLabel { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--home-blue); }
 .exampleQuestions { display: flex; flex-direction: column; gap: 10px; }
-.exampleQuestions p { margin: 0; padding: 14px 20px; border-radius: 9999px; background: var(--home-sky); font-size: 15px; color: var(--home-navy); }
-.exampleReview { margin: 0; font-size: 18px; line-height: 1.7; font-weight: 500; color: var(--home-navy); }
+.exampleQuestions p { margin: 0; padding: 14px 20px; border-radius: 9999px; background: var(--home-sky); font-size: 15px; color: var(--home-text); }
+.exampleReview { margin: 0; font-size: 18px; line-height: 1.7; font-weight: 500; color: var(--home-text); }
 .exampleDiscovery { margin: 0; font-size: 15px; line-height: 1.75; color: var(--home-muted); }
 
 /* 03 BELIEVE */
 .beliefs { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 40px 48px; }
-.beliefs > div { display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 1px solid var(--home-line-on-navy); }
-.beliefs h3 { margin: 0; font-size: 15px; font-weight: 800; color: var(--home-sky-ink); }
-.beliefs p { margin: 0; font-size: 15px; line-height: 1.8; color: var(--home-on-navy); }
+.beliefs > div { display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 1px solid var(--band-line); }
+.beliefs h3 { margin: 0; font-size: 15px; font-weight: 800; color: var(--band-heading); }
+.beliefs p { margin: 0; font-size: 15px; line-height: 1.8; color: var(--on-band-muted); }
 
 /* 04 PEOPLE + AI */
 .people { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
 .people article { display: flex; flex-direction: column; gap: 10px; padding: 28px; border: 1px solid var(--home-line); border-radius: 12px; }
 .people span { font-size: 13px; font-weight: 700; color: var(--home-blue); }
-.people h3 { margin: 0; font-size: 20px; font-weight: 700; color: var(--home-navy); }
+.people h3 { margin: 0; font-size: 20px; font-weight: 700; color: var(--home-text); }
 .people p { margin: 0; font-size: 15px; line-height: 1.75; color: var(--home-muted); }
 .aiBox { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; padding: 36px 40px; border-radius: 12px; background: var(--home-sky); }
-.aiIcon { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 9999px; background: var(--home-navy); color: var(--home-white); }
+.aiIcon { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 9999px; background: var(--home-action); color: var(--home-on-action); }
 .aiIcon :global(.lucide-icon) { width: 24px; height: 24px; }
 .aiText { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
-.aiText h3 { margin: 0; font-size: 20px; font-weight: 700; color: var(--home-navy); }
+.aiText h3 { margin: 0; font-size: 20px; font-weight: 700; color: var(--home-text); }
 .aiText p { margin: 0; font-size: 16px; line-height: 1.8; color: var(--home-ink); }
 .aiText .aiPrivacy { font-size: 14px; line-height: 1.7; color: var(--home-muted); }
 
@@ -140,23 +138,23 @@
 .betaText { margin: 0; max-width: 560px; font-size: 16px; line-height: 1.8; color: var(--home-muted); }
 .betaInvite { margin: 0; max-width: 560px; font-size: 15px; line-height: 1.8; color: var(--home-ink); }
 .betaActions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 12px; }
-.betaSecondary { display: inline-flex; align-items: center; padding: 16px 28px; border: 1px solid var(--home-navy); border-radius: 12px; color: var(--home-navy); font-size: 16px; font-weight: 700; }
-.betaSecondary:hover { background: var(--home-white); }
-.betaButton { display: inline-flex; align-items: center; gap: 10px; padding: 16px 28px; border-radius: 12px; background: var(--home-navy); color: var(--home-white); font-size: 16px; font-weight: 700; }
+.betaSecondary { display: inline-flex; align-items: center; padding: 16px 28px; border: 1px solid var(--home-text); border-radius: 12px; color: var(--home-text); font-size: 16px; font-weight: 700; }
+.betaSecondary:hover { background: var(--home-surface); }
+.betaButton { display: inline-flex; align-items: center; gap: 10px; padding: 16px 28px; border-radius: 12px; background: var(--home-action); color: var(--home-on-action); font-size: 16px; font-weight: 700; }
 .betaButton:hover { background: var(--home-blue); }
 .betaButton :global(.lucide-icon) { width: 18px; height: 18px; }
 
 /* Footer */
-.footer { border-top: 1px solid var(--home-line); background: var(--home-white); }
+.footer { border-top: 1px solid var(--home-line); background: var(--home-surface); }
 .footerInner { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; padding-block: 36px; }
 .footerInner > div:first-child { display: flex; flex-direction: column; gap: 4px; }
-.footerInner strong { font-size: 15px; color: var(--home-navy); }
+.footerInner strong { font-size: 15px; color: var(--home-text); }
 .footerInner span { font-size: 13px; color: var(--home-muted); }
 .footerLinks { display: flex; flex-wrap: wrap; gap: 0 24px; }
 .footerInner a { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--home-blue); text-decoration: underline; text-underline-offset: 4px; }
 
-/* Keyboard focus must stay visible on the navy section; the light hero keeps the default focus ring. */
-.navy :focus-visible { outline-color: var(--home-sky-ink); }
+/* Keyboard focus on the band follows its label colour (accent by day, light sky at night). */
+.navy :focus-visible { outline-color: var(--band-label); }
 .home :global(#public-content:focus) { outline: none; }
 
 @media (min-width: 960px) {
@@ -174,4 +172,10 @@
 /* The brand wordmark and the demo button do not both fit beside the menu button on a phone. */
 @media (max-width: 480px) {
   .headerBar :global(.brand-english) { display: none; }
+}
+
+/* Night: the photo dims under a deeper night overlay so the library sits under starlight (tests/design.test.ts checks
+   hero text against this overlay over a white pixel). */
+@media (prefers-color-scheme: dark) {
+  .hero { --hero-scrim: 90%; --hero-scrim-far: 80%; }
 }

@@ -36,13 +36,85 @@
   --shadow-color: #14284B14;
   --overlay: #14284B99;
   --on-navy-muted: #C9DAEA;
-  /* Day concept: a library above the clouds. Sky at the top of public bands, clouds below, small ✦ stars stay by day. */
-  --sky-top: #D6E8F8;
-  --cloud: var(--surface);
-  --cloud-shade: #EEF4FB;
+  /* Band roles: light sky bands with navy text by day, deep night bands after dark. */
+  --band: #E6F1FA;
+  --on-band: #14284B;
+  --on-band-muted: var(--text-secondary);
+  --band-eyebrow: var(--accent-ink);
+  --band-label: var(--accent-ink);
+  --band-heading: var(--text-strong);
+  --band-rule: var(--brand-primary);
+  --band-line: var(--border-default);
+  /* The page itself is white sky; warm paper stays for reading surfaces such as the journal. */
+  --page: #F8FBFF;
+  --page-glow: none;
+  --ground: var(--surface);
+  /* Day: clear sky at the top of public bands, small ✦ stars stay by day. */
+  --sky-top: #E3EFFB;
+  --sky-low: var(--surface-blue);
+  --hero-fade: var(--surface);
   --star: var(--brand-primary);
+  --galaxy: #8E7CFF;
   /* Warm reading light; the dark theme keeps it as the sunlight that remains at night. */
   --reading-light: var(--surface-paper);
+  --lamp: #7A5320;
+  --chip: var(--brand-primary-light);
+}
+
+/* Night: a library for watching the stars and the galaxy. Follows the system setting only.
+   Starlight is the cold accent; the reading lamp (warm paper) is the sunlight that stays. Cards are translucent navy. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --brand-primary: #6FA8E8;
+    --brand-primary-light: #A9CDEB;
+    --brand-action: #8EC5FF;
+    --background: #0B1426;
+    --surface: #15233FD6;
+    --surface-blue: #182B4D;
+    --surface-muted: #131E36;
+    --surface-paper: #2A2419;
+    --text-primary: #E3EAF5;
+    --text-secondary: #A7B4C8;
+    --text-strong: #F5F8FD;
+    --border-default: #2B3B5E;
+    --text-muted-accessible: #A7B4C8;
+    --accent-ink: #8EC5FF;
+    --growth-ink: #F5F8FD;
+    --action-hover: #B9DCFF;
+    --action-active: #6AAEF0;
+    --primary-foreground: #0B1426;
+    --on-navy: #C4D2E6;
+    --focus-ring: #8EC5FF;
+    --control-border: #7D90B2;
+    --success-ink: #A8D88F;
+    --success-surface: #1B2A1C;
+    --warning-ink: #F2C97E;
+    --warning-surface: #2E2414;
+    --error-ink: #FFA394;
+    --error-surface: #341A1C;
+    --disabled-surface: #1A2540;
+    --shadow-color: #00000066;
+    --overlay: #050A16CC;
+    --on-navy-muted: #A9B9D0;
+    --band: #13213F;
+    --on-band: #F5F8FD;
+    --on-band-muted: #C4D2E6;
+    --band-eyebrow: var(--lamp);
+    --band-label: var(--brand-primary-light);
+    --band-heading: var(--brand-primary-light);
+    --band-rule: color-mix(in srgb, var(--brand-primary-light) 50%, transparent);
+    --band-line: color-mix(in srgb, var(--brand-primary-light) 35%, transparent);
+    --page: #0B1426;
+    --page-glow: linear-gradient(180deg, #0B1426 0%, #1D1A3F 100%);
+    --ground: transparent;
+    --sky-top: #0F1B36;
+    --sky-low: #131F3B;
+    --hero-fade: #0E152C;
+    --star: #CFE6FF;
+    --lamp: #F0D29A;
+    --chip: #2E4A78;
+  }
 }
 
 @theme inline {

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CloudIsland, Sparkle } from "@/components/sky";
+import { Sparkle } from "@/components/sky";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentIdentity } from "@/lib/auth/server";
@@ -29,7 +29,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const error = params.error && Object.hasOwn(errorMessages, params.error) ? errorMessages[params.error] : null;
   return <main className="auth-page" id="main-content">
     <Link href="/" className="text-button">← 물음 소개</Link>
-    <div className="auth-intro"><CloudIsland /><Image src="/brand/muleum-icon-sky.png" alt="물음" width={100} height={100} priority /><p className="eyebrow"><Sparkle />WELCOME TO MULEUM</p><h1>나의 배움 공간으로</h1><p className="muted">질문으로 만나고, 함께 자라는 물음.</p></div>
+    <div className="auth-intro"><Image src="/brand/muleum-icon-question.png" alt="물음" width={100} height={100} priority /><p className="eyebrow"><Sparkle />WELCOME TO MULEUM</p><h1>나의 배움 공간으로</h1><p className="muted">질문으로 만나고, 함께 자라는 물음.</p></div>
     {params.logout === "done" && <p className="notice success" role="status">로그아웃했어요.</p>}
     {params.logout === "push-unconfirmed" && <p className="notice warning" role="status">로그아웃했지만 알림 구독 해제를 확인하지 못했어요. 브라우저 또는 기기 설정에서 물음의 알림을 꺼 주세요.</p>}
     {params.logout === "local" && <p className="notice warning" role="status">이 브라우저에서는 로그아웃했어요. 인증 서버의 세션 종료는 확인하지 못했어요.</p>}

@@ -1,6 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 async function menu(page:Page,label:string){const narrow=(page.viewportSize()?.width??1440)<=690;if(narrow)await page.getByRole('button',{name:'메뉴 열기',exact:true}).click();const link=page.getByRole('navigation',{name:narrow?'모바일 메뉴':'메인 메뉴',exact:true}).getByRole('link',{name:label,exact:true});const href=await link.getAttribute('href');await link.click();await expect(page).toHaveURL(new RegExp(`${href}$`));}
-test('rendered text has AA contrast on public, student, teacher and administrator screens',async({page})=>{
+test('rendered text has AA contrast on public, student, teacher and administrator screens in light and dark themes',async({page})=>{
+ for(const colorScheme of ['light','dark'] as const){await page.emulateMedia({colorScheme});
  for(const path of ['/','/app','/app/teacher','/app/parent','/app/accounts','/app/profile','/app/journal','/app/lesson','/app/videos','/app/questions','/app/goals','/guide/app','/login',`/invite/${'a'.repeat(43)}`]){
   await page.goto(path);await expect(page.getByRole('heading',{level:1})).toBeVisible();
   await page.evaluate(()=>document.querySelectorAll('details').forEach(d=>{d.open=true;}));
@@ -12,13 +13,15 @@ test('rendered text has AA contrast on public, student, teacher and administrato
    for(const el of document.querySelectorAll<HTMLElement>('body *')){
     if((!Array.from(el.childNodes).some(n=>n.nodeType===Node.TEXT_NODE&&n.textContent?.trim())&&!['INPUT','TEXTAREA','SELECT'].includes(el.tagName))||el.closest('[aria-hidden="true"],:disabled')||['SCRIPT','STYLE','OPTION'].includes(el.tagName)||el.classList.contains('skip-link'))continue;
     const box=el.getBoundingClientRect();const style=getComputedStyle(el);if(!box.width||!box.height||style.visibility==='hidden')continue;
-    let node:HTMLElement|null=el;let bg=[255,255,255];while(node){const c=rgb(getComputedStyle(node).backgroundColor);if(c.length===3||c[3]===1){bg=c;break;}node=node.parentElement;}
+    const layers:number[][]=[];let node:HTMLElement|null=el;let base=[255,255,255];
+    while(node){const c=rgb(getComputedStyle(node).backgroundColor);const alpha=c.length===3?1:c[3];if(alpha===1){base=c;break;}if(alpha>0)layers.push(c);node=node.parentElement;}
+    const bg=layers.reverse().reduce((under,c)=>under.map((v,i)=>c[i]*c[3]+v*(1-c[3])),base.slice(0,3));
     const foreground=lum(rgb(style.color));const background=lum(bg);const ratio=(Math.max(foreground,background)+.05)/(Math.min(foreground,background)+.05);
     const large=parseFloat(style.fontSize)>=24||(parseFloat(style.fontSize)>=18.66&&parseFloat(style.fontWeight)>=700);
     if(ratio<(large?3:4.5))errors.push(`${el.tagName}.${el.className}: ${ratio.toFixed(2)} ${(el.textContent??'').slice(0,35)}`);
    }return errors;
-  });expect(failures,`${path} text contrast`).toEqual([]);
- }
+  });expect(failures,`${colorScheme} ${path} text contrast`).toEqual([]);
+ }}
 });
 test('profile optional gender is private and persists only in the demo session',async({page},info)=>{
  await page.goto('/app/profile');await expect(page.getByLabel('성별 선택')).toHaveValue('');
